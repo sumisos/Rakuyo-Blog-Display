@@ -1,0 +1,21 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy via Rsync
+      uses: burnett01/rsync-deployments@4.0
+      with:
+        switches: -avzr --delete --exclude=.git --exclude=.github --exclude=.well-known
+        path: ./
+        remote_path: ${{ secrets.DEPLOY_TARGET }}
+        remote_host: ${{ secrets.DEPLOY_HOST }}
+        remote_user: ${{ secrets.DEPLOY_USER }}
+        remote_key: ${{ secrets.DEPLOY_KEY }}
