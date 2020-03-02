@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Hexo CI - Sync
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     - master
 
 jobs:
-  build-and-deploy:
+  sync:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
