@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ews.ink","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="核心元件——红石比较器详情请查阅wiki，细节不再赘述。挑重点的说：两种模式，信号强度计算。 比较模式(前侧火把关闭)「侧面信号」&gt;「后面信号」，输出0；否则输出后面信号。放置后默认为此模式。 作差模式(前侧火把开启)「（两侧中最大的）侧面信号」与「后面信号」作差，差值取绝对值，最后输出这个值。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「游戏」《Minecraft》红石笔记#1 红石比较器与满箱检测">
+<meta property="og:url" content="https://ews.ink/game/Minecraft-Redstone-1-FullBoxDetector/index.html">
+<meta property="og:site_name" content="非典型中二征候群">
+<meta property="og:description" content="核心元件——红石比较器详情请查阅wiki，细节不再赘述。挑重点的说：两种模式，信号强度计算。 比较模式(前侧火把关闭)「侧面信号」&gt;「后面信号」，输出0；否则输出后面信号。放置后默认为此模式。 作差模式(前侧火把开启)「（两侧中最大的）侧面信号」与「后面信号」作差，差值取绝对值，最后输出这个值。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2019/12/11/zT6uij1WEY9ObZG.png">
+<meta property="og:image" content="https://i.loli.net/2019/12/11/qpXS2Ookv3MKHQ7.png">
+<meta property="og:image" content="https://i.loli.net/2019/12/11/I5XV3GETxAcadLF.png">
+<meta property="article:published_time" content="2019-10-12T17:20:00.000Z">
+<meta property="article:modified_time" content="2020-03-24T19:22:52.211Z">
+<meta property="article:author" content="Cyanashi">
+<meta property="article:tag" content="Minecraft">
+<meta property="article:tag" content="红石">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2019/12/11/zT6uij1WEY9ObZG.png">
+
+<link rel="canonical" href="https://ews.ink/game/Minecraft-Redstone-1-FullBoxDetector/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>「游戏」《Minecraft》红石笔记#1 红石比较器与满箱检测 | 非典型中二征候群</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">非典型中二征候群</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">康复中心<br>Everybody Wants Some</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-todos">
+
+    <a href="/todos/" rel="section"><i class="fa fa-fw fa-list"></i>企划</a>
+
+  </li>
+        <li class="menu-item menu-item-games">
+
+    <a href="/games/" rel="section"><i class="fa fa-fw fa-gamepad"></i>游戏</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ews.ink/game/Minecraft-Redstone-1-FullBoxDetector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Cyanashi">
+      <meta itemprop="description" content="Always Sometimes Monsters">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="非典型中二征候群">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          「游戏」《Minecraft》红石笔记#1 红石比较器与满箱检测
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-13 01:20:00" itemprop="dateCreated datePublished" datetime="2019-10-13T01:20:00+08:00">2019-10-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-25 03:22:52" itemprop="dateModified" datetime="2020-03-25T03:22:52+08:00">2020-03-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/game/" itemprop="url" rel="index"><span itemprop="name">游戏</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="核心元件——红石比较器"><a href="#核心元件——红石比较器" class="headerlink" title="核心元件——红石比较器"></a>核心元件——红石比较器</h2><p>详情请查阅<a href="https://minecraft-zh.gamepedia.com/红石比较器" target="_blank" rel="noopener">wiki</a>，细节不再赘述。<br>挑重点的说：两种模式，信号强度计算。</p>
+<h3 id="比较模式-前侧火把关闭"><a href="#比较模式-前侧火把关闭" class="headerlink" title="比较模式(前侧火把关闭)"></a>比较模式(前侧火把关闭)</h3><p>「侧面信号」&gt;「后面信号」，输出0；否则输出后面信号。<br>放置后默认为此模式。</p>
+<h3 id="作差模式-前侧火把开启"><a href="#作差模式-前侧火把开启" class="headerlink" title="作差模式(前侧火把开启)"></a>作差模式(前侧火把开启)</h3><p>「（两侧中最大的）侧面信号」与「后面信号」作差，差值取绝对值，最后输出这个值。</p>
+<a id="more"></a>
+
+<h3 id="直接输出-计算容器信号强度"><a href="#直接输出-计算容器信号强度" class="headerlink" title="直接输出(计算容器信号强度)"></a>直接输出(计算容器信号强度)</h3><h4 id="已知物品数量，求信号强度值"><a href="#已知物品数量，求信号强度值" class="headerlink" title="已知物品数量，求信号强度值"></a>已知物品数量，求信号强度值</h4><p>当比较器背后为容器时，输出的信号强度与容器内容量有关。<br>容器为空时，输出0。<br>容器不为空时，<code>信号强度 = 向下取整[1 + (所有物品格的满度和 / 物品格总数) * 14]</code>。</p>
+<blockquote>
+<p><strong>什么叫满度？</strong><br><code>单格的满度 = 单格中的物品数 / 此类物品最大堆叠数</code><br>1组堆叠64个的物品A有48个，则满度为0.75。<br>1组堆叠16个的物品B有8个，则满度为0.5。<br>无法堆叠（即1组就1个；单组有且仅有1个）的物品C有1个，满度为1。</p>
+</blockquote>
+<blockquote>
+<p><strong>为什么是除以14？</strong><br>因为「1.容器不为空才会有信号」&amp;&amp;「2.信号从1到15只有14种变化」。</p>
+</blockquote>
+<h4 id="已知信号强度值，求物品数量"><a href="#已知信号强度值，求物品数量" class="headerlink" title="已知信号强度值，求物品数量"></a>已知信号强度值，求物品数量</h4><p><code>所需物品数 = max{目标信号强度 , 取整[ ( 容器总格数 * 64 / 14) * ( 目标信号强度 - 1 ) ] + 1 }</code></p>
+<h2 id="逻辑实现"><a href="#逻辑实现" class="headerlink" title="逻辑实现"></a>逻辑实现</h2><p>我们想实现的功能是满箱检测，满箱检测的目的一般是检测到箱子满了之后做些什么。<br>比如说防止溢出、防止溢出、还有防止溢出（说的就是你，地毯机。点名批评.jpg）。<br>也就是说，触发的条件是「箱子满了」，需要的结果是「发出信号」。<br>这里提供三种思路，抛砖引玉，欢迎革新想法和改良建议。</p>
+<h2 id="差值计算法"><a href="#差值计算法" class="headerlink" title="差值计算法"></a>差值计算法</h2><p>也是目前最主流的用法，网上教程基本都是这个。</p>
+<h3 id="布线"><a href="#布线" class="headerlink" title="布线"></a>布线</h3><p>这里我们先约定「箱子+一个普通比较器」是一个不管何种方案必定存在的整体。</p>
+<blockquote>
+<p>因为无论你准备如何实现满箱检测，总之你是一定要「用比较器检测箱子内容存量并输出对应信号」的。</p>
+</blockquote>
+<p>那么我们把这个箱子<strong>加上（用来输出它所用容量的）比较器</strong>的整体叫做，额，叫做什么呢，容量检测器吧。<br>好，现在我们获得了一个叫做「<strong>容量检测器</strong>」的新红石元件，它可以装若干物品，并根据物品数量输出相应的信号。<br>这个新元件（容量检测器）是由一个容器和一个「普通比较器」组成的，这个「普通比较器」只起一个显示作用；一会我们还要用到另一个「核心比较器」，那个<strong>后来的「核心比较器」</strong>才是真正实现主要功能的红石元件。</p>
+<p>开始走线了。</p>
+<ol>
+<li>先放一个「核心比较器」</li>
+<li>把「核心比较器」切换到作差模式（比较器前端火把亮起）</li>
+<li>「核心比较器」侧面的input接「容量检测器」的output</li>
+<li>「核心比较器」背后的input接一个红石信号源：红石火把、拉杆（当然要是打开状态）、处于充能状态的方块（比如红石块）之类</li>
+</ol>
+<p><img src="https://i.loli.net/2019/12/11/zT6uij1WEY9ObZG.png" alt="差值计算法"><br>完成。</p>
+<h3 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h3><p>当「容量检测器」装满物品时，「核心比较器」无输出；否则输出n格信号（n取决于容器的剩余空间，剩余空间越多则信号越强）。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>处于「<strong>作！差！模！式！</strong>」的「核心比较器」后面输入固定为15，当侧面输出!=15时，相差多少就输出对应强度的信号。<br>只有侧面输入==15时，差值为0，无输出。</p>
+<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><p>我们要的是满箱检测啊，满的时候输出，不满不输出。这个效果反了，弟弟。<br>那简单，短路红石火把取个反就行了。</p>
+<h2 id="控制信号法"><a href="#控制信号法" class="headerlink" title="控制信号法"></a>控制信号法</h2><p>这个方案其实挺傻的，和第一种思路比起没有明显优势，局限性还更大（需要用红石线控制信号强度）。（但正因如此布线反而灵活了？）</p>
+<h3 id="布线-1"><a href="#布线-1" class="headerlink" title="布线"></a>布线</h3><ol>
+<li>先放一个「核心比较器」</li>
+<li>「核心比较器」侧面的input接「容量检测器」的output</li>
+<li>「核心比较器」背后的input接<strong>两格</strong>红石线，然后再接红石信号源（总之就是要保证「核心比较器」后侧输入为14，只要能做到这一点就行。怕红石线被干扰的话骚一点接熔炉+比较器，再骚一点接讲台放一本15页的书翻到第14页都行）</li>
+</ol>
+<blockquote>
+<p>话说1.14（指JAVA版）加入的讲台用来控制信号真的很好用<br>只占用一格，可以输出任意强度信号<br>缺点是成本过高（包括制造需要的时间成本）<br><del>其实成本高只是比起传统红石方案来说，实际上也高不到哪里去（10个木板+3本书+1套书与笔）</del></p>
+</blockquote>
+<p><img src="https://i.loli.net/2019/12/11/qpXS2Ookv3MKHQ7.png" alt="控制信号法"></p>
+<h3 id="效果-1"><a href="#效果-1" class="headerlink" title="效果"></a>效果</h3><p>当「容量检测器」装满物品时，「核心比较器」无输出；否则固定输出14格信号。</p>
+<h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><p>「核心比较器」后面输出固定为14，当侧面输入&lt;=14时，总是输出14。<br>只有侧面输入==15时，比较器被截断，无输出。</p>
+<h3 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h3><p>想要实现满箱才发出警报信号的话，最后输出需要取反，这一点同「差值计算法」。</p>
+<h2 id="暴力比较法"><a href="#暴力比较法" class="headerlink" title="暴力比较法"></a>暴力比较法</h2><p>个人最喜欢的方法，简单粗暴。<br>原理简单，效果直观。</p>
+<h3 id="布线-2"><a href="#布线-2" class="headerlink" title="布线"></a>布线</h3><ol>
+<li>先放一个「核心比较器」</li>
+<li>「核心比较器」<strong>背后的input</strong>接「容量检测器」的output</li>
+<li>「核心比较器」<strong>侧面的input</strong>接<strong>一格</strong>红石线，然后再接红石信号源（需要放一格红石线的原因是红石比较器的侧面输入很傲娇，它不认发散的信号，只有用红石线或者中继器直接指定方向地接入它才认）</li>
+</ol>
+<p><img src="https://i.loli.net/2019/12/11/I5XV3GETxAcadLF.png" alt="暴力比较法"></p>
+<h3 id="效果-2"><a href="#效果-2" class="headerlink" title="效果"></a>效果</h3><p>当「容量检测器」装满物品时，「核心比较器」输出15格信号；否则无输出。</p>
+<h3 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h3><p>「核心比较器」侧面输出固定为15，当后面输入&lt;=14时，总是无输出（被侧面的15截断了）。<br>只有后面输入==15时，比较器被打通，输出15。</p>
+<p>「核心比较器」侧面接入的红石线怕被干扰替换成中继器也行，不用怕会多延迟，这个中继器只是用来定向转送信号源的。<br>当它第一次被接通之后就常时输出15了，所以打几档都无所谓，此处作用完全等于「加了抗干扰和永不衰减两个功能的」红石线（当然这里只用到了抗干扰）。</p>
+<h3 id="应用-2"><a href="#应用-2" class="headerlink" title="应用"></a>应用</h3><p>不用取反了，直接就是满箱才输出不满不输出，而且只要输出就是输出最大信号（15格）。</p>
+<p>布线简直不能更简单，完全不用思考，箱子接第一个比较器接第二个比较器，第二个比较器侧面接入15信号，完成。<br>而且最后完成的效果看起来也很直观。</p>
+<p>最重要的一点是这个方案比前面两个延迟都更短。<br>小型电路要用非门，利用短路做的火把反相器可以说唯一解了吧。<br>众所周知，<a href="https://minecraft-zh.gamepedia.com/%E7%BA%A2%E7%9F%B3%E7%81%AB%E6%8A%8A#.E7.BA.A2.E7.9F.B3.E5.85.83.E4.BB.B6" target="_blank" rel="noopener">红石火把有2gt延迟</a>，即红石火把改变状态至少需要1 tick。<br>也就是说，红石电路每多用一个火把反相器，就会多0.1s延迟。<br>0.1s的延迟已经不小了，我也不是写轮眼，把三种做在一起同时观察，延迟的差别肉眼可见。</p>
+<h2 id="附录-满度表"><a href="#附录-满度表" class="headerlink" title="附录-满度表"></a>附录-满度表</h2><p>摘录自<a href="https://minecraft-zh.gamepedia.com/%E7%BA%A2%E7%9F%B3%E6%AF%94%E8%BE%83%E5%99%A8#.E5.AE.B9.E5.99.A8" target="_blank" rel="noopener">wiki</a></p>
+<table style="margin-left: 0.5em; margin-right: 0; text-align: center;">
+    <tbody>
+        <tr>
+            <th colspan="7">容器信号强度所需最少物品</th>
+        </tr>
+        <tr>
+            <th rowspan="3" style="vertical-align:bottom;">信号<br>强度</th>
+            <th colspan="6">容器与物品栏数</th>
+        </tr>
+        <tr>
+            <div>
+                <th>3格容器</th>
+                <th>5格容器</th>
+                <th>9格容器</th>
+                <th>27格容器</th>
+                <th>54格容器</th>
+                <th>—</th>
+            </div>
+        </tr>
+        <tr>
+            <th>熔炉<br>高炉<br>烟熏炉</th>
+            <th>漏斗<br>酿造台<br>漏斗矿车on探测铁轨</th>
+            <th>发射器<br>投掷器</th>
+            <th>箱子/陷阱箱<br>木桶<br>潜影盒<br>运输矿车on探测铁轨</th>
+            <th>大箱子/大陷阱箱</th>
+            <th>唱片机播放的唱片</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>0个</td>
+            <td>0个</td>
+            <td>0个</td>
+            <td>0个</td>
+            <td>0个</td>
+            <td>—</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>1个</td>
+            <td>1个</td>
+            <td>1个</td>
+            <td>1个</td>
+            <td>1个</td>
+            <td>“13”</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>14个</td>
+            <td>23个</td>
+            <td>42个</td>
+            <td>1组+60个</td>
+            <td>3组+55个</td>
+            <td>“cat”</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>28个</td>
+            <td>46个</td>
+            <td>1组+19个</td>
+            <td>3组+55个</td>
+            <td>7组+46个</td>
+            <td>“blocks”</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>42个</td>
+            <td>1组+5个</td>
+            <td>1组+60个</td>
+            <td>5组+51个</td>
+            <td>11组+37个</td>
+            <td>“chirp”</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>55个</td>
+            <td>1组+28个</td>
+            <td>2组+37个</td>
+            <td>7组+46个</td>
+            <td>15组+28个</td>
+            <td>“far”</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>1组+5个</td>
+            <td>1组+51个</td>
+            <td>3组+14个</td>
+            <td>9组+42个</td>
+            <td>19组+19个</td>
+            <td>“mall”</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>1组+19个</td>
+            <td>2组+10个</td>
+            <td>3组+55个</td>
+            <td>11组+37个</td>
+            <td>23组+10个</td>
+            <td>“melohi”</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>1组+32个</td>
+            <td>2组+32个</td>
+            <td>4组+32个</td>
+            <td>13组+32个</td>
+            <td>27组</td>
+            <td>“stal”
+            </td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>1组+46个</td>
+            <td>2组+55个</td>
+            <td>5组+10个</td>
+            <td>15组+28个</td>
+            <td>30组+55个</td>
+            <td>“strad”
+            </td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>1组+60个</td>
+            <td>3组+14个</td>
+            <td>5组+51个</td>
+            <td>17组+23个</td>
+            <td>34组+46个</td>
+            <td>“ward”
+            </td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>2组+10个</td>
+            <td>3组+37个</td>
+            <td>6组+28个</td>
+            <td>19组+19个</td>
+            <td>38组+37个</td>
+            <td>“11”
+            </td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>2组+23个</td>
+            <td>3组+60个</td>
+            <td>7组+5个</td>
+            <td>21组+14个</td>
+            <td>42组+28个</td>
+            <td>“wait”
+            </td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td>2组+37个</td>
+            <td>4组+19个</td>
+            <td>7组+46个</td>
+            <td>23组+10个</td>
+            <td>46组+19个</td>
+            <td>—
+            </td>
+        </tr>
+        <tr>
+            <td>14</td>
+            <td>2组+51个</td>
+            <td>4组+42个</td>
+            <td>8组+23个</td>
+            <td>25组+5个</td>
+            <td>50组+10个</td>
+            <td>—
+            </td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>3组</td>
+            <td>5组</td>
+            <td>9组</td>
+            <td>27组</td>
+            <td>54组</td>
+            <td>—
+            </td>
+        </tr>
+    </tbody>
+</table>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Cyanashi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://ews.ink/game/Minecraft-Redstone-1-FullBoxDetector/" title="「游戏」《Minecraft》红石笔记#1 红石比较器与满箱检测">https://ews.ink/game/Minecraft-Redstone-1-FullBoxDetector/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/minecraft/" rel="tag"># Minecraft</a>
+              <a href="/tags/%E7%BA%A2%E7%9F%B3/" rel="tag"># 红石</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/game/Jx3-100-SYPL-PVE-GaiBang/" rel="prev" title="「游戏」《剑侠情缘网络版叁》世外蓬莱Ver丐帮PVE两段宏思路及实现">
+      <i class="fa fa-chevron-left"></i> 「游戏」《剑侠情缘网络版叁》世外蓬莱Ver丐帮PVE两段宏思路及实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/game/Diablo3-S19-Monk-Build/" rel="next" title="「游戏」《暗黑破坏神3》S19永恒之战武僧Build">
+      「游戏」《暗黑破坏神3》S19永恒之战武僧Build <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#核心元件——红石比较器"><span class="nav-number">1.</span> <span class="nav-text">核心元件——红石比较器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#比较模式-前侧火把关闭"><span class="nav-number">1.1.</span> <span class="nav-text">比较模式(前侧火把关闭)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#作差模式-前侧火把开启"><span class="nav-number">1.2.</span> <span class="nav-text">作差模式(前侧火把开启)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#直接输出-计算容器信号强度"><span class="nav-number">1.3.</span> <span class="nav-text">直接输出(计算容器信号强度)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#已知物品数量，求信号强度值"><span class="nav-number">1.3.1.</span> <span class="nav-text">已知物品数量，求信号强度值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#已知信号强度值，求物品数量"><span class="nav-number">1.3.2.</span> <span class="nav-text">已知信号强度值，求物品数量</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑实现"><span class="nav-number">2.</span> <span class="nav-text">逻辑实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#差值计算法"><span class="nav-number">3.</span> <span class="nav-text">差值计算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#布线"><span class="nav-number">3.1.</span> <span class="nav-text">布线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效果"><span class="nav-number">3.2.</span> <span class="nav-text">效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">3.3.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用"><span class="nav-number">3.4.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#控制信号法"><span class="nav-number">4.</span> <span class="nav-text">控制信号法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#布线-1"><span class="nav-number">4.1.</span> <span class="nav-text">布线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效果-1"><span class="nav-number">4.2.</span> <span class="nav-text">效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理-1"><span class="nav-number">4.3.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用-1"><span class="nav-number">4.4.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#暴力比较法"><span class="nav-number">5.</span> <span class="nav-text">暴力比较法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#布线-2"><span class="nav-number">5.1.</span> <span class="nav-text">布线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效果-2"><span class="nav-number">5.2.</span> <span class="nav-text">效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理-2"><span class="nav-number">5.3.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用-2"><span class="nav-number">5.4.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附录-满度表"><span class="nav-number">6.</span> <span class="nav-text">附录-满度表</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cyanashi"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Cyanashi</p>
+  <div class="site-description" itemprop="description">Always Sometimes Monsters</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:po@ews.ink" title="E-Mail → mailto:po@ews.ink"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://t.me/Cyanashi" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-telegram"></i>Telegram</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/Cyanashi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bgm.tv/user/rakuyo" title="Bangumi → https:&#x2F;&#x2F;bgm.tv&#x2F;user&#x2F;rakuyo" rel="noopener" target="_blank"><i class="fa fa-fw fa-tv"></i>Bangumi</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://tool.ews.ink/" title="Tools → https:&#x2F;&#x2F;tool.ews.ink" rel="noopener" target="_blank"><i class="fa fa-fw fa-wrench"></i>Tools</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/profiles/76561198186170037" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;profiles&#x2F;76561198186170037" rel="noopener" target="_blank"><i class="fa fa-fw fa-steam"></i>Steam</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-paw"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cyanashi All Rights Reserved.</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">57k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:43</span>
+</div><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备17037841号-1 </a>
+  <span class="post-meta-divider">|</span>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.1
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+
+<span class="post-meta-divider">|</span>
+<!-- 在网页底部添加网站运行时间 -->
+<span id="timeDate">载入天数...&ensp;</span><span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("10/18/2018 15:04:17");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "已运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

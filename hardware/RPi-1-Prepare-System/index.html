@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ews.ink","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="前言 这块3B+还是当初做毕设的时候买的，答辩完之后就一直吃灰了。最近折腾了一顿nanopi neo2发现貌似还是树莓派玩起来舒服一些。于是决定重新捡起来。Cyanashi 于 2020.3.23  当初装的是官方Raspbian纯净版系统「RASPBIAN STRETCH LITE」，里面不算轮子的话除了毕设项目就是几个网页，稍微回忆了下，确信没有什么值得备份的，直接重装吧。毕设？现在让我去改当">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「硬件」树莓派食用手册#1 安装64位Debian系统">
+<meta property="og:url" content="https://ews.ink/hardware/RPi-1-Prepare-System/index.html">
+<meta property="og:site_name" content="非典型中二征候群">
+<meta property="og:description" content="前言 这块3B+还是当初做毕设的时候买的，答辩完之后就一直吃灰了。最近折腾了一顿nanopi neo2发现貌似还是树莓派玩起来舒服一些。于是决定重新捡起来。Cyanashi 于 2020.3.23  当初装的是官方Raspbian纯净版系统「RASPBIAN STRETCH LITE」，里面不算轮子的话除了毕设项目就是几个网页，稍微回忆了下，确信没有什么值得备份的，直接重装吧。毕设？现在让我去改当">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.sdcard.org/chs/consumers/choices/speed_class/img/video_speed%20class_01.jpg">
+<meta property="og:image" content="https://i.loli.net/2020/03/23/Zf3Q7xOAuhkc8MG.png">
+<meta property="og:image" content="https://i.loli.net/2020/03/23/b5aSFV2mD8jzo9k.png">
+<meta property="article:published_time" content="2018-11-25T11:11:00.000Z">
+<meta property="article:modified_time" content="2020-03-24T19:22:52.211Z">
+<meta property="article:author" content="Cyanashi">
+<meta property="article:tag" content="树莓派">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Debian">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.sdcard.org/chs/consumers/choices/speed_class/img/video_speed%20class_01.jpg">
+
+<link rel="canonical" href="https://ews.ink/hardware/RPi-1-Prepare-System/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>「硬件」树莓派食用手册#1 安装64位Debian系统 | 非典型中二征候群</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">非典型中二征候群</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">康复中心<br>Everybody Wants Some</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-todos">
+
+    <a href="/todos/" rel="section"><i class="fa fa-fw fa-list"></i>企划</a>
+
+  </li>
+        <li class="menu-item menu-item-games">
+
+    <a href="/games/" rel="section"><i class="fa fa-fw fa-gamepad"></i>游戏</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ews.ink/hardware/RPi-1-Prepare-System/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Cyanashi">
+      <meta itemprop="description" content="Always Sometimes Monsters">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="非典型中二征候群">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          「硬件」树莓派食用手册#1 安装64位Debian系统
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-11-25 19:11:00" itemprop="dateCreated datePublished" datetime="2018-11-25T19:11:00+08:00">2018-11-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-25 03:22:52" itemprop="dateModified" datetime="2020-03-25T03:22:52+08:00">2020-03-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hardware/" itemprop="url" rel="index"><span itemprop="name">硬件</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>8 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>这块3B+还是当初做毕设的时候买的，答辩完之后就一直吃灰了。<br>最近折腾了一顿nanopi neo2发现貌似还是树莓派玩起来舒服一些。<br>于是决定重新捡起来。<br>Cyanashi 于 2020.3.23</p>
+</blockquote>
+<p>当初装的是官方Raspbian纯净版系统「RASPBIAN STRETCH LITE」，里面不算轮子的话除了毕设项目就是几个网页，稍微回忆了下，确信没有什么值得备份的，直接重装吧。<br>毕设？现在让我去改当初的幼稚代码，不如直接重写还省时省力一些。</p>
+<a id="more"></a>
+
+<h2 id="选系统"><a href="#选系统" class="headerlink" title="选系统"></a>选系统</h2><p>据我所知目前的官方系统都是32位的，别的型号不太了解，反正树莓派3B+肯定是64位的CPU，嗯……</p>
+<p>我选择「<a href="https://github.com/openfans-community-offical/Debian-Pi-Aarch64" target="_blank" rel="noopener">Debian Pi Aarch64</a>」，民间树莓派爱好者发行的树莓派64位系统。<br>为什么一定要上64位？<br>简单来说32位系统是无法完全发挥64位板子的性能的，具体有兴趣了解可以自行查询资料，此处不再赘述。<br>其实网上流传的树莓派64位系统方案还是挺多的，我选择Debian Pi Aarch64的原因是他们文档写得比较详细，而且开源，而且有中文，而且做了<a href="https://gitee.com/openfans-community/Debian-Pi-Aarch64/blob/master/README_zh.md#1-4%E9%83%A8%E5%88%86%E7%B3%BB%E7%BB%9F%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C" target="_blank" rel="noopener">测试</a>。</p>
+<h2 id="烧录系统"><a href="#烧录系统" class="headerlink" title="烧录系统"></a>烧录系统</h2><p>如果把树莓派视为一台PC，他的硬盘就是Micro SD Card（即Trans-flash Card，俗称TF卡）。</p>
+<h3 id="存储卡种类科普"><a href="#存储卡种类科普" class="headerlink" title="存储卡种类科普"></a>存储卡种类科普</h3><p>大部分人都见过的存储卡应该有两种，大的和小的。</p>
+<p>小的就是前几年手机常用的存储卡，你管他叫内存卡也好，sd卡也罢，tf卡也行，实际上人家原名Trans-flash Card，后来改名Micro SD Card。<br>大的一般是相机用得多，那个才是真正的SD卡（Secure Digital Memory Card），其实这是一个大类，详细又分为：普通SD卡/SDHC（SD High Capacity）/SDXC（SD eXtended Capacity）/SDUC（SD Ultra Capacity），其实就是容量和读写速度的区别，现在说相机用的SD卡一般默认指SDXC或SDUC。</p>
+<p>虽然不同种类的SD卡直观来看是容量上的区别，如果看本质的话其实是文件系统的区别，普通SD是FAT16（&lt;2G），SDHC是FAT32（&gt;2G），SDXC才是exFAT（&lt;2T），SDUC也是exFAT（&lt;128T）。</p>
+<p>SDUC是SD 7.0标准提出的两个种类之一，另一种是SD Express（读取速度接近1G/s）。<br>SD Express不是横向扩展的种类，而是竖直扩展。<br>它管的是传输速度，跟容量没关系，也就是说有SDHC Express / SDXC Express / SDUC Express。</p>
+<p>另外还有MS卡（Memory Stick，俗称记忆棒，索尼研发的，没错，就是PS那个，童年回忆有了），以及CF卡（Compact Flash，闪迪制定标准的闪存卡）。<br>要考古的话早年还有东芝和三星的SM卡（Smart Media），西门子和闪迪的MMC卡（Multi-Media Card），国内接触的比较少就不继续展开了。</p>
+<h3 id="存储卡速度科普"><a href="#存储卡速度科普" class="headerlink" title="存储卡速度科普"></a>存储卡速度科普</h3><h4 id="速度等级"><a href="#速度等级" class="headerlink" title="速度等级"></a>速度等级</h4><p>即Speed Class，分为四级：Class2（&gt;2M/s）、Class4（&gt;4M/s）、Class6（&gt;6M/s）、Class10（&gt;10M/s）。<br>一般说的Class0是指低于Class2和没标注的。<br>都2020年了，C10以下也好意思拿出来卖？</p>
+<h4 id="超高速速度等级"><a href="#超高速速度等级" class="headerlink" title="超高速速度等级"></a>超高速速度等级</h4><p>分为两级，即UHS-I（UHS Speed Class 1，&gt;10M/s）和UHS-III（UHS Speed Class 3，&gt;30M/s）。<br>有一说一，现在还标着C10卖的卡的感觉都是用早年的最高标准骗外行。<br>U1=C10，你随便找张U3的卡岂不是等于3倍C10？<br>如果非要杠，C10就是Class的最高标准了，1T/s不也是C10？<br>我想说的是，U1也许会标C10好看一点，但凡他能达到29.9M/s他会放着U3不标去标什么C10吗？销售商的宣发和杠这个的人里面肯定有一个傻子，我觉得是销售商。</p>
+<h4 id="视频速度等级"><a href="#视频速度等级" class="headerlink" title="视频速度等级"></a>视频速度等级</h4><p>最吃容量的文件格式是什么？当然是视频啦。<br>音频弟弟就不用说了，目前的技术用数字信号记录音频是有其局限性的，上限（说的就是你，flac）摆在那里，群众对耳放/功放的追求又比较玄学 <del>所以现在还有一大堆黑胶党</del>。<br>而胶片/胶卷党就很难过了，人眼能接受的信息量是有限的，就算你视力5.2，能看清多远的极限就在那里，同样距离拍一张超高分辨率的照片 <del>放大再放大，每一根毛看得都清清楚楚</del> 想必是比人眼要清晰的。<br>况且图像编码技术日新月异，胶片早就打不过数码了，战斗力差距还会随着技术发展越来越大。</p>
+<p>而图像再大也就一张图，视频可是在图像的基础上能无限增长的……<br>现在不是都拍4K视频 <del>120fps那种</del> 了吗，所以出了新的标准。<br>分为五级：V6（6M/s）、V10（10M/s）、V30（30M/s）、V60（60M/s）、V90（90M/s）。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p><img src="https://www.sdcard.org/chs/consumers/choices/speed_class/img/video_speed%20class_01.jpg" alt="来自SD卡官网"><br>看到这里应该对如何选存储卡没有疑问了。<br>我没有跑题，以下内容基于我们已经选好TF卡的前提下。</p>
+<h3 id="装机"><a href="#装机" class="headerlink" title="装机"></a>装机</h3><p>裸板可以跳过这一小节。<br>哎，树莓派是不是机器，是吧，我装树莓派也是装机，没毛病。<br>不过这里要注意一点：</p>
+<p>如果你是第一次玩树莓派，如果你给板子买了壳，不管这个壳看起来插口留了多大，<strong>一定要装完壳再装TF卡</strong>。</p>
+<p>我当初大力出奇迹怼坏了一张64G，一张32G，纯憨批，没什么好说的。</p>
+<h3 id="正式烧录系统"><a href="#正式烧录系统" class="headerlink" title="正式烧录系统"></a>正式烧录系统</h3><p>众所周知，PC装系统 = 板子烧录img到TF卡。<br>如果是刚买的「Micro SD Card 崭新出厂」，建议用「<a href="https://www.sdcard.org/downloads/formatter_4/eula_windows/index.html" target="_blank" rel="noopener">SD Memory Card Formatter</a>」格式化一次。</p>
+<p>准备好系统镜像，现在的<a href="https://www.raspberrypi.org/downloads/raspbian/" target="_blank" rel="noopener">官方系统</a>有三个版本：</p>
+<ul>
+<li>「<a href="https://downloads.raspberrypi.org/raspbian_full_latest" target="_blank" rel="noopener">Raspbian Buster with desktop and recommended software</a>」桌面版带推荐软件</li>
+<li>「<a href="https://downloads.raspberrypi.org/raspbian_latest" target="_blank" rel="noopener">Raspbian Buster with desktop</a>」桌面版</li>
+<li>「<a href="https://downloads.raspberrypi.org/raspbian_lite_latest" target="_blank" rel="noopener">Raspbian Buster Lite</a>」无桌面版</li>
+</ul>
+<p>小孩子才做选择，我全都不要。前文说了，我选择使用「<a href="https://gitee.com/openfans-community/Debian-Pi-Aarch64/blob/master/README_zh.md#6%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80" target="_blank" rel="noopener">Debian Pi Aarch64</a>」，民间编译的64位Debian。</p>
+<p>确定下好的系统镜像是<code>.img</code>格式，如果是其他格式，包括但不限于<code>.zip</code>/<code>.tar</code>/<code>.xz</code>等等，请把压缩包里的<code>.img</code>系统镜像文件解压出来。<br>友情提醒：「<a href="http://www.7-zip.org/download.html" target="_blank" rel="noopener">7-Zip</a>」可以解压大部分压缩包格式。打个比方，在win上面解压<code>.xz</code>属于基本操作。</p>
+<p>确认过TF卡读写没问题就可以开始烧录了，我喜欢用「<a href="https://www.balena.io/etcher/" target="_blank" rel="noopener">Etcher</a>」（支持全平台win/mac/linux，就一个字，专业），当然你更喜欢轻便小巧的「<a href="https://sourceforge.net/projects/win32diskimager/" target="_blank" rel="noopener">Win32 Disk Imager</a>」（win特供）也行。</p>
+<p>注意烧录系统完成后，windows会重新读取TF卡，一般会发现两个盘，其中一个盘win无法识别，提醒你是否格式化，<strong>绝对不要点格式化</strong>，linux系统的磁盘分区win读不出来怎么想都很合理吧。</p>
+<blockquote>
+<p>如果你烧录的是官方镜像，请注意以下内容：<br>最好去windows可以读的那个（大概只有几十M？）boot盘的<strong>根目录</strong>下新建一个文件，<strong>命名为<code>ssh</code>（没有后缀名）</strong><br>这是因为某次更新后raspbian为了安全起见默认禁用ssh，但可以用这种方式手动打开<br>系统初始化的时候检测到根目录下有名为<code>ssh</code>文件会删除此文件并启用ssh<br>以前（18年）是这样，不太清楚现在还是不是，如果是多此一举也不会出问题  </p>
+</blockquote>
+<p>本文之后的内容都以默认使用Debian Pi Aarch64为准，官方系统仅供参考。</p>
+<h2 id="SSH连接"><a href="#SSH连接" class="headerlink" title="SSH连接"></a>SSH连接</h2><p>准备好ssh连接软件，「<a href="https://www.netsarang.com/zh/Xshell/" target="_blank" rel="noopener">Xshell</a>」都直接自称「业界最强大的SSH客户机」了，但如果你依然愿意使用「<a href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html" target="_blank" rel="noopener">PuTTY</a>」的话也没有问题。<br><img src="https://i.loli.net/2020/03/23/Zf3Q7xOAuhkc8MG.png" alt="查看网络属性"><br>首先使用PC查看网络属性，记住名为「以太网」的项，有多个以太网选「描述」是网卡型号那个，截张图不费事吧。<br>Win+X，打开PowerShell，运行<code>ipconfig</code>，如果是连wifi的笔记本，以太网一项的「媒体状态」应该是「媒体已断开连接」。<br>把TF卡插入树莓派（卡槽在板子背面），<strong>用网线连接PC和树莓派</strong>，接通电源。<br>再运行<code>ipconfig</code>，以太网有了吧，有了就对了。<br>Win+X，打开PowerShell，运行<code>arp -a</code>，一般情况会有一个MAC地址b8开头的动态IP，那个就是树莓派IP。<br>如果这个IP用22端口连不进去——什么叫连不进去，用ssh软件连接这个IP无法打开，或者<code>telnet [这个IP] 22</code>提示「无法打开到主机的连接」，就叫连不进去——那么就用路由器的DHCP给它分配一个IP。</p>
+<p>如何用笔记本把网络分享给树莓派呢？<br><img src="https://i.loli.net/2020/03/23/b5aSFV2mD8jzo9k.png" alt="共享网络"><br>打开「控制面板 - 网络和共享中心」，点击「WLAN」-「属性」，切到「共享」标签卡，勾选「允许其他网络用户通过此计算机的 Internet 连接来连接」，如果下面的让你填「家庭网络连接」就填树莓派的网络连接，一般就是以太网。</p>
+<p>打开路由器后台管理页面，新增一个MAC地址b8开头的IP，那个IP就是路由器分给（通过笔记本共享了网络的）树莓派的IP。<br>用ssh软件连接树莓派，初始账户<code>pi</code>/<code>raspberry</code>，如果登录成功就大功告成了。<br>在树莓派终端运行<code>ifconfig wlan0</code>可以看到树莓派当前IP。</p>
+<blockquote>
+<p>推荐用路由器给树莓派分配一个固定IP，只要是近几年的路由器应该都有这个功能，给树莓派MAC绑定一个固定的IP。<br>方便以后使用固定IP连接树莓派，否则每次重启路由器或者树莓派之后，想连接树莓派还要开路由器后台看新的IP是什么，也挺麻烦的。</p>
+</blockquote>
+<h2 id="默认root"><a href="#默认root" class="headerlink" title="默认root"></a>默认root</h2><ol>
+<li>执行<code>sudo -i</code>将当前用户从<code>pi</code>切换到<code>root</code></li>
+<li>执行<code>cd ~</code>进入root工作目录</li>
+<li>（可选）最好执行<code>sudo passwd root</code>设置root密码并<strong>牢记</strong>，忘记密码自行解决</li>
+<li>执行<code>ssh-keygen</code>生成密钥对</li>
+<li>执行<code>cd .ssh</code>切换到ssh元目录</li>
+<li>执行<code>cat id_rsa.pub &gt;&gt; authorized_keys</code>把刚刚生成的密钥对存进白名单</li>
+<li>执行<code>chmod 600 authorized_keys</code>确保白名单文件权限正确</li>
+<li>执行<code>chmod 700 ~/.ssh</code>确保ssh元目录权限正确</li>
+<li>执行<code>vim /etc/ssh/sshd_config</code>编辑ssh配置文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">## 允许使用ssh-key验证并登录 ##</span><br><span class="line">RSAAuthentication yes</span><br><span class="line">PubkeyAuthentication yes</span><br><span class="line"></span><br><span class="line">#PermitRootLogin prohibit-password</span><br><span class="line">## 上面这行的意思是允许登录root 但禁止直接登录root 即只能用别的账户登录成功后 sudo -i 切换到root ##</span><br><span class="line">## 不用动它 新增下面这行就行 ##</span><br><span class="line">PermitRootLogin yes # 允许root直接登录</span><br></pre></td></tr></table></figure>
+<code>:eq</code>保存并退出</li>
+<li>把<code>~/.ssh/id_rsa</code>（私钥文件）下载到本地PC，直接打开复制粘贴也好，用WinSCP下载也好随便，总之把私钥保存到本地就行</li>
+<li>执行<code>service sshd restart</code>或者<code>/etc/init.d/ssh restart</code>重启ssh</li>
+<li>回到Xshell，打开「工具」菜单中的用户密钥管理者，导入，把私钥导入Xshell然后登录会话的时候选「Public Key」就OK了</li>
+</ol>
+<p>（可选）配置完成后，为了提高安全性直接禁止密码登录：<br><code>vim /etc/ssh/sshd_config</code>打开配置文件，修改为<code>PasswordAuthentication no</code>保存后重启ssh即可。<br>此外还可以把默认的22端口修改为其他端口，更安全。</p>
+<h2 id="修改主机名"><a href="#修改主机名" class="headerlink" title="修改主机名"></a>修改主机名</h2><p>自己的树莓派当然有特别的名字，如果还叫<code>raspbian</code>那跟别人家的妖艳贱货有什么区别，对吧。<br><code>vim /etc/hostname</code>把<code>raspbian</code>修改新的名字。<br>如果想把localhost的别名也改了，可以<code>vim /etc/hosts</code>把<code>raspbian</code>修改新的名字。<br><code>reboot</code>重启后生效。</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Cyanashi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://ews.ink/hardware/RPi-1-Prepare-System/" title="「硬件」树莓派食用手册#1 安装64位Debian系统">https://ews.ink/hardware/RPi-1-Prepare-System/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rpi/" rel="tag"># 树莓派</a>
+              <a href="/tags/linux/" rel="tag"># Linux</a>
+              <a href="/tags/Debian/" rel="tag"># Debian</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/hardware/RPi-3-Prepare-Hardware/" rel="next" title="「硬件」树莓派食用手册#3 安装传感器以及摄像头等相关硬件">
+      「硬件」树莓派食用手册#3 安装传感器以及摄像头等相关硬件 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选系统"><span class="nav-number">2.</span> <span class="nav-text">选系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#烧录系统"><span class="nav-number">3.</span> <span class="nav-text">烧录系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#存储卡种类科普"><span class="nav-number">3.1.</span> <span class="nav-text">存储卡种类科普</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储卡速度科普"><span class="nav-number">3.2.</span> <span class="nav-text">存储卡速度科普</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#速度等级"><span class="nav-number">3.2.1.</span> <span class="nav-text">速度等级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#超高速速度等级"><span class="nav-number">3.2.2.</span> <span class="nav-text">超高速速度等级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#视频速度等级"><span class="nav-number">3.2.3.</span> <span class="nav-text">视频速度等级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">3.2.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#装机"><span class="nav-number">3.3.</span> <span class="nav-text">装机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#正式烧录系统"><span class="nav-number">3.4.</span> <span class="nav-text">正式烧录系统</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSH连接"><span class="nav-number">4.</span> <span class="nav-text">SSH连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#默认root"><span class="nav-number">5.</span> <span class="nav-text">默认root</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改主机名"><span class="nav-number">6.</span> <span class="nav-text">修改主机名</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cyanashi"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Cyanashi</p>
+  <div class="site-description" itemprop="description">Always Sometimes Monsters</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:po@ews.ink" title="E-Mail → mailto:po@ews.ink"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://t.me/Cyanashi" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-telegram"></i>Telegram</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/Cyanashi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bgm.tv/user/rakuyo" title="Bangumi → https:&#x2F;&#x2F;bgm.tv&#x2F;user&#x2F;rakuyo" rel="noopener" target="_blank"><i class="fa fa-fw fa-tv"></i>Bangumi</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://tool.ews.ink/" title="Tools → https:&#x2F;&#x2F;tool.ews.ink" rel="noopener" target="_blank"><i class="fa fa-fw fa-wrench"></i>Tools</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/profiles/76561198186170037" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;profiles&#x2F;76561198186170037" rel="noopener" target="_blank"><i class="fa fa-fw fa-steam"></i>Steam</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-paw"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cyanashi All Rights Reserved.</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">57k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:43</span>
+</div><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备17037841号-1 </a>
+  <span class="post-meta-divider">|</span>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.1
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+
+<span class="post-meta-divider">|</span>
+<!-- 在网页底部添加网站运行时间 -->
+<span id="timeDate">载入天数...&ensp;</span><span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("10/18/2018 15:04:17");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "已运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

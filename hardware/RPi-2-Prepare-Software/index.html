@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ews.ink","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文默认使用「Debian Pi Aarch64」以及root用户。如果装的官方系统Raspbian仅供参考，请视实际情况自行调整。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「硬件」树莓派食用手册#2 准备软件环境及相关配置">
+<meta property="og:url" content="https://ews.ink/hardware/RPi-2-Prepare-Software/index.html">
+<meta property="og:site_name" content="非典型中二征候群">
+<meta property="og:description" content="本文默认使用「Debian Pi Aarch64」以及root用户。如果装的官方系统Raspbian仅供参考，请视实际情况自行调整。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-23T00:48:58.000Z">
+<meta property="article:modified_time" content="2020-03-24T19:22:52.211Z">
+<meta property="article:author" content="Cyanashi">
+<meta property="article:tag" content="树莓派">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Debian">
+<meta property="article:tag" content="宝塔面板">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ews.ink/hardware/RPi-2-Prepare-Software/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>「硬件」树莓派食用手册#2 准备软件环境及相关配置 | 非典型中二征候群</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">非典型中二征候群</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">康复中心<br>Everybody Wants Some</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-todos">
+
+    <a href="/todos/" rel="section"><i class="fa fa-fw fa-list"></i>企划</a>
+
+  </li>
+        <li class="menu-item menu-item-games">
+
+    <a href="/games/" rel="section"><i class="fa fa-fw fa-gamepad"></i>游戏</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ews.ink/hardware/RPi-2-Prepare-Software/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Cyanashi">
+      <meta itemprop="description" content="Always Sometimes Monsters">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="非典型中二征候群">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          「硬件」树莓派食用手册#2 准备软件环境及相关配置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-23 08:48:58" itemprop="dateCreated datePublished" datetime="2020-03-23T08:48:58+08:00">2020-03-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-25 03:22:52" itemprop="dateModified" datetime="2020-03-25T03:22:52+08:00">2020-03-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hardware/" itemprop="url" rel="index"><span itemprop="name">硬件</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文默认使用「<a href="https://github.com/openfans-community-offical/Debian-Pi-Aarch64" target="_blank" rel="noopener">Debian Pi Aarch64</a>」以及root用户。<br>如果装的官方系统Raspbian仅供参考，请视实际情况自行调整。</p>
+<a id="more"></a>
+
+<h2 id="Debian-Pi-Aarch64-相关设置"><a href="#Debian-Pi-Aarch64-相关设置" class="headerlink" title="Debian Pi Aarch64 相关设置"></a>Debian Pi Aarch64 相关设置</h2><p>本节摘录自「<a href="https://gitee.com/openfans-community/Debian-Pi-Aarch64/blob/master/README_zh.md#1-3%E5%90%84%E7%89%88%E6%9C%AC%E5%8A%9F%E8%83%BD%E6%AF%94%E8%BE%83" target="_blank" rel="noopener">Debian Pi Aarch64 官方文档</a>」</p>
+<h3 id="Docker-容器"><a href="#Docker-容器" class="headerlink" title="Docker 容器"></a>Docker 容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start docker.service <span class="comment"># 手动开启</span></span><br><span class="line">systemctl <span class="built_in">enable</span> docker.service <span class="comment"># 启用开机启动</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop docker.service <span class="comment"># 手动停止</span></span><br><span class="line">systemctl <span class="built_in">disable</span> docker.service <span class="comment"># 禁用开机启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Web-GUI-管理平台"><a href="#Web-GUI-管理平台" class="headerlink" title="Web GUI 管理平台"></a>Web GUI 管理平台</h3><p>默认服务端口：9090<br>访问地址：https://[你的树莓派IP]:9090/<br>由于证书是本地部署的，直接访问的话浏览器必然提示安全证书有问题，错误代码一般带<code>CERTIFICATE</code>/<code>AUTHORITY</code>/<code>INVALID</code>。<br>Chrome如何设置请自行查询资料。（建议不要修改默认设置，会带来相应的安全隐患。）<br>Win10自带Edge，用Edge直接访问就行了，提示「此站点不安全」展开「详细信息」然后点击「继续转到网页」即可。<br>接着使用任何拥有管理权限的账户登录，和SSH密码登录一样。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start cockpit.socket <span class="comment"># 手动开启</span></span><br><span class="line">systemctl <span class="built_in">enable</span> cockpit.socket <span class="comment"># 启用开机启动</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop cockpit.socket <span class="comment"># 手动停止</span></span><br><span class="line">systemctl <span class="built_in">disable</span> cockpit.socket <span class="comment"># 禁用开机启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Web-SSH-客户端"><a href="#Web-SSH-客户端" class="headerlink" title="Web SSH 客户端"></a>Web SSH 客户端</h3><p>默认服务端口：4200<br>如果默认开启，建议关闭。<br>「Web GUI 管理平台」里面已经封装「命令行终端」功能了，完全可以作为「Web SSH 客户端」的替代品。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop shellinabox.service <span class="comment"># 手动停止</span></span><br><span class="line">systemctl <span class="built_in">disable</span> shellinabox.service <span class="comment"># 禁用开机启动</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="CecOS-CaaS-容器云"><a href="#CecOS-CaaS-容器云" class="headerlink" title="CecOS CaaS 容器云"></a>CecOS CaaS 容器云</h3><p>默认服务端口：8443<br>如果不知道是什么，或者不知道怎么用，建议直接关闭。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop cecos-caas.service <span class="comment"># 手动停止</span></span><br><span class="line">systemctl <span class="built_in">disable</span> cecos-caas.service <span class="comment"># 禁用开机启动</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="配置时区"><a href="#配置时区" class="headerlink" title="配置时区"></a>配置时区</h2><ol>
+<li>执行<code>date</code>查看系统时间，如果慢了8个小时，说明是GMT时区</li>
+<li>执行<code>dpkg-reconfigure tzdata</code>，选择<code>Asia</code>/<code>Shanghai</code>切换到CST（中国时区）</li>
+</ol>
+<h2 id="配置别名"><a href="#配置别名" class="headerlink" title="配置别名"></a>配置别名</h2><h3 id="bash"><a href="#bash" class="headerlink" title="bash"></a>bash</h3><p>运行<code>vim ~/.bashrc</code>编辑bash配置文件，比如<code>ll</code>并不是原生指令，如果使用的系统没有预设的话，需要自行编写别名。<br>修改完后<code>source ~/.bashrc</code>让新配置生效。</p>
+<h3 id="git"><a href="#git" class="headerlink" title="git"></a>git</h3><p>以下均为个人习惯，关于Git配置别名详见<a href="https://www.liaoxuefeng.com/wiki/896043488029600/898732837407424" target="_blank" rel="noopener">廖雪峰的Git教程</a>。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">git config --global alias.st status</span><br><span class="line">git config --global alias.co checkout</span><br><span class="line">git config --global alias.ci commit</span><br><span class="line">git config --global alias.br branch</span><br><span class="line">git config --global alias.psm <span class="string">"push origin master"</span></span><br><span class="line">git config --global alias.plm <span class="string">"pull origin master"</span></span><br><span class="line">git config --global alias.unstage <span class="string">"reset HEAD"</span></span><br><span class="line">git config --global alias.last <span class="string">"log -1"</span></span><br><span class="line">git config --global alias.lg <span class="string">"log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset' --abbrev-commit"</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="狗狗网线-配置wifi"><a href="#狗狗网线-配置wifi" class="headerlink" title="狗狗网线 配置wifi"></a><del>狗狗网线</del> 配置wifi</h2><ol>
+<li>执行<code>iwlist wlan0 scan</code>扫描附近的无线网来确认树莓派的网卡正常工作，回显的ESSID就是wifi名字</li>
+<li>执行<code>vim /etc/wpa_supplicant/wpa_supplicant.conf</code>编辑wifi配置<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">country&#x3D;CN</span><br><span class="line">network&#x3D;&#123;</span><br><span class="line">    ssid&#x3D;&quot;路由器wifi名字&quot;</span><br><span class="line">    psk&#x3D;&quot;路由器wifi密码&quot;</span><br><span class="line">    priority&#x3D;1</span><br><span class="line">    id_str&#x3D;&quot;wifi-router&quot;</span><br><span class="line">&#125;</span><br><span class="line">network&#x3D;&#123;</span><br><span class="line">    ssid&#x3D;&quot;手机热点名字&quot;</span><br><span class="line">    psk&#x3D;&quot;手机热点密码&quot;</span><br><span class="line">    priority&#x3D;2</span><br><span class="line">    id_str&#x3D;&quot;wifi-hotspot&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+可以只配置一个，配置多个会根据优先级<code>priority</code>依次尝试连接</li>
+<li>执行<code>systemctl restart networking</code>重启网络服务</li>
+<li>执行<code>reboot</code>重启树莓派系统</li>
+<li>此时SSH会话当然会断开，去路由器后台看看树莓派连上wifi了没</li>
+<li>如果没有设置固定IP，建议为树莓派MAC地址绑定固定IP，方便以后每次直接连接不用花时间精力再查树莓派分配到哪个IP</li>
+<li>重新连接后使用<code>ifconfig wlan0</code>可以查看新的IP</li>
+</ol>
+<h2 id="更换国内软件源"><a href="#更换国内软件源" class="headerlink" title="更换国内软件源"></a>更换国内软件源</h2><p>编辑软件源配置文件<code>vim /etc/apt/sources.list</code>。<br>阿里云：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">deb http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;raspbian&#x2F;raspbian&#x2F; stretch main contrib non-free rpi</span><br><span class="line">deb-src http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;raspbian&#x2F;raspbian&#x2F; stretch main contrib non-free rpi</span><br></pre></td></tr></table></figure>
+<p>清华：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deb http:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster main non-free contrib </span><br><span class="line">deb http:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian-security buster&#x2F;updates main </span><br><span class="line">deb http:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster-updates main non-free contrib </span><br><span class="line">deb http:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster-backports main non-free contrib</span><br></pre></td></tr></table></figure>
+<p>建议用清华。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt update; apt upgrade</span><br><span class="line">apt-get dist-upgrade -y</span><br></pre></td></tr></table></figure>
+
+<h2 id="利用虚拟机配置lnmp环境"><a href="#利用虚拟机配置lnmp环境" class="headerlink" title="利用虚拟机配置lnmp环境"></a>利用虚拟机配置lnmp环境</h2><p>本节摘录自「<a href="https://gitee.com/openfans-community/Debian-Pi-Aarch64/blob/master/README_zh.md#4-2%E5%AE%9D%E5%A1%94%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%BD%BF%E7%94%A8%E4%BB%8B%E7%BB%8D" target="_blank" rel="noopener">Debian Pi Aarch64 官方文档</a>」<br>首先下载「<a href="https://gitee.com/openfans-community/Debian-Pi-Aarch64/blob/master/README_zh.md#6%E4%B8%8B%E8%BD%BD%E5%9C%B0%E5%9D%80" target="_blank" rel="noopener">宝塔虚拟机</a>」（<code>bt-panel_vm_5.9.1_pro_v2.tar</code>@2020.3.23）并移动到到树莓派。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">apt update ; apt install tar gzip zip unzip bzip2 xz-utils -y <span class="comment"># 下载解压软件</span></span><br><span class="line">tar -xvf bt-panel_vm_5.9.1_pro_v2.tar <span class="comment"># 解压虚拟机压缩包</span></span><br><span class="line"><span class="built_in">cd</span> bt-panel_vm_5.9.1_pro_v2 <span class="comment"># 切换工作目录</span></span><br><span class="line">xz -d -k bt.qcow2.disk.xz <span class="comment"># 解压虚拟磁盘镜像</span></span><br><span class="line">./install <span class="comment"># 安装宝塔虚拟机</span></span><br><span class="line">./bt_run <span class="comment"># 启动宝塔虚拟机</span></span><br><span class="line">./install int <span class="comment"># 启用开机自动启动宝塔虚拟机</span></span><br></pre></td></tr></table></figure>
+<p>看到<code>nohup: appending output to &#39;nohup.out&#39;</code>就成功后台运行宝塔虚拟机了，可以回车退出到前台。</p>
+<h2 id="使用frp实现内网穿透"><a href="#使用frp实现内网穿透" class="headerlink" title="使用frp实现内网穿透"></a>使用frp实现内网穿透</h2><h3 id="下载frp"><a href="#下载frp" class="headerlink" title="下载frp"></a>下载frp</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">export FRP_VERSION&#x3D;0.32.0 # 可以先去 https:&#x2F;&#x2F;github.com&#x2F;fatedier&#x2F;frp&#x2F;releases 看看最新版本是多少</span><br><span class="line"></span><br><span class="line">## 以下是服务器(服务端 Server) ##</span><br><span class="line"># 注意 Debian x64 的树莓派 应该使用 arm64 版本</span><br><span class="line">wget &quot;https:&#x2F;&#x2F;github.com&#x2F;fatedier&#x2F;frp&#x2F;releases&#x2F;download&#x2F;v$&#123;FRP_VERSION&#125;&#x2F;frp_$&#123;FRP_VERSION&#125;_linux_arm64.tar.gz&quot; # 下载</span><br><span class="line">tar xzvf frp_$&#123;FRP_VERSION&#125;_linux_arm64.tar.gz # 解压</span><br><span class="line"></span><br><span class="line">## 以下是树莓派(客户端 Client) ##</span><br><span class="line"># 根据自己服务器类型选择frp版本 一般都是amd64</span><br><span class="line">wget &quot;https:&#x2F;&#x2F;github.com&#x2F;fatedier&#x2F;frp&#x2F;releases&#x2F;download&#x2F;v$&#123;FRP_VERSION&#125;&#x2F;frp_$&#123;FRP_VERSION&#125;_linux_arm64.tar.gz&quot; # 下载</span><br><span class="line">tar xzvf frp_$&#123;FRP_VERSION&#125;_linux_amd64.tar.gz # 解压</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务器配置frp"><a href="#服务器配置frp" class="headerlink" title="服务器配置frp"></a>服务器配置frp</h3><p>运行<code>vim frps.ini</code>编辑Server的frps配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">privilege_token &#x3D; [私有凭证] # 相当于frp的密码 不设置也能用 但如果服务器不设置就开了frp 任何一个知道你服务器ip和frp端口的人都能连</span><br><span class="line">bind_port &#x3D; 7000 # frp默认的服务器端口</span><br><span class="line">vhost_http_prot &#x3D; 8080 # 如果内网穿透要转发http服务的话</span><br></pre></td></tr></table></figure>
+<p>打开防火墙对应端口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --add-port&#x3D;7000&#x2F;tcp # 这里打开的端口是 frps.ini 中 配置的 bind_port</span><br><span class="line">firewall-cmd --permanent --add-port&#x3D;8080&#x2F;tcp # 如果设置了 vhost_http_prot</span><br><span class="line">systemctl restart firewalld.service # 重启防火墙服务</span><br><span class="line">firewall-cmd --permanent --query-port&#x3D;7000&#x2F;tcp # 可以查询端口状态</span><br><span class="line">.&#x2F;frps -c .&#x2F;frps.ini # 使用刚编辑好的配置文件 启动frp服务端</span><br></pre></td></tr></table></figure>
+<p>注意：如果服务器有安全策略（阿里云/腾讯云etc），需要登录对应管理平台设置安全组放行相应端口。（主要是入方向，出方向应该都是默认全放通的）</p>
+<h3 id="树莓派配置frp"><a href="#树莓派配置frp" class="headerlink" title="树莓派配置frp"></a>树莓派配置frp</h3><p>运行<code>vim frpc.ini</code>编辑Client的frpc配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">privilege_token &#x3D; [私有凭证]</span><br><span class="line">server_addr &#x3D; [服务器公网IP]</span><br><span class="line">server_port &#x3D; 7000</span><br><span class="line"></span><br><span class="line">[ssh]</span><br><span class="line">type &#x3D; tcp</span><br><span class="line">local_ip &#x3D; 127.0.0.1</span><br><span class="line">local_port &#x3D; 22</span><br><span class="line">remote_port &#x3D; 222 # 设置用公网SSH连接的端口 注意这个端口也要去服务器打开对应防火墙&#x2F;安全组的端口</span><br><span class="line"></span><br><span class="line">[web]</span><br><span class="line">type &#x3D; http</span><br><span class="line">local_port &#x3D; 80</span><br><span class="line">custom_domains &#x3D; [域名] # 直接填服务器IP也行</span><br></pre></td></tr></table></figure>
+<p>启动frp客户端<code>./frpc -c ./frpc.ini</code>。</p>
+<h2 id="设置默认使用Python3"><a href="#设置默认使用Python3" class="headerlink" title="设置默认使用Python3"></a>设置默认使用Python3</h2><ol>
+<li><code>python --version</code>查看版本，虽然python2跟python3都安好了的，但默认的应该是2.7</li>
+<li><code>rm /usr/bin/python</code>删掉之前的python链接</li>
+<li><code>ln -s /usr/bin/python3.7 /usr/bin/python</code>新建python链接</li>
+<li><code>python --version</code>查看版本，应该是3.7了吧</li>
+</ol>
+<h3 id="全新安装pip"><a href="#全新安装pip" class="headerlink" title="全新安装pip"></a>全新安装pip</h3><ol>
+<li><code>wget https://bootstrap.pypa.io/get-pip.py --no-check-certificate</code>下载安装脚本</li>
+<li><code>python get-pip.py</code>执行安装脚本</li>
+<li><code>pip -V</code>查看pip版本</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Cyanashi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://ews.ink/hardware/RPi-2-Prepare-Software/" title="「硬件」树莓派食用手册#2 准备软件环境及相关配置">https://ews.ink/hardware/RPi-2-Prepare-Software/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rpi/" rel="tag"># 树莓派</a>
+              <a href="/tags/linux/" rel="tag"># Linux</a>
+              <a href="/tags/Debian/" rel="tag"># Debian</a>
+              <a href="/tags/%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF/" rel="tag"># 宝塔面板</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/game/Diablo3-S20-Necromancer-Build/" rel="prev" title="「游戏」《暗黑破坏神3》S20禁忌文献死灵法师Build">
+      <i class="fa fa-chevron-left"></i> 「游戏」《暗黑破坏神3》S20禁忌文献死灵法师Build
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Debian-Pi-Aarch64-相关设置"><span class="nav-number">1.</span> <span class="nav-text">Debian Pi Aarch64 相关设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-容器"><span class="nav-number">1.1.</span> <span class="nav-text">Docker 容器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-GUI-管理平台"><span class="nav-number">1.2.</span> <span class="nav-text">Web GUI 管理平台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web-SSH-客户端"><span class="nav-number">1.3.</span> <span class="nav-text">Web SSH 客户端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CecOS-CaaS-容器云"><span class="nav-number">1.4.</span> <span class="nav-text">CecOS CaaS 容器云</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置时区"><span class="nav-number">2.</span> <span class="nav-text">配置时区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置别名"><span class="nav-number">3.</span> <span class="nav-text">配置别名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bash"><span class="nav-number">3.1.</span> <span class="nav-text">bash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#git"><span class="nav-number">3.2.</span> <span class="nav-text">git</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#狗狗网线-配置wifi"><span class="nav-number">4.</span> <span class="nav-text">狗狗网线 配置wifi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更换国内软件源"><span class="nav-number">5.</span> <span class="nav-text">更换国内软件源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用虚拟机配置lnmp环境"><span class="nav-number">6.</span> <span class="nav-text">利用虚拟机配置lnmp环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用frp实现内网穿透"><span class="nav-number">7.</span> <span class="nav-text">使用frp实现内网穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载frp"><span class="nav-number">7.1.</span> <span class="nav-text">下载frp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器配置frp"><span class="nav-number">7.2.</span> <span class="nav-text">服务器配置frp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#树莓派配置frp"><span class="nav-number">7.3.</span> <span class="nav-text">树莓派配置frp</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设置默认使用Python3"><span class="nav-number">8.</span> <span class="nav-text">设置默认使用Python3</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#全新安装pip"><span class="nav-number">8.1.</span> <span class="nav-text">全新安装pip</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cyanashi"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Cyanashi</p>
+  <div class="site-description" itemprop="description">Always Sometimes Monsters</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:po@ews.ink" title="E-Mail → mailto:po@ews.ink"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://t.me/Cyanashi" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-telegram"></i>Telegram</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/Cyanashi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bgm.tv/user/rakuyo" title="Bangumi → https:&#x2F;&#x2F;bgm.tv&#x2F;user&#x2F;rakuyo" rel="noopener" target="_blank"><i class="fa fa-fw fa-tv"></i>Bangumi</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://tool.ews.ink/" title="Tools → https:&#x2F;&#x2F;tool.ews.ink" rel="noopener" target="_blank"><i class="fa fa-fw fa-wrench"></i>Tools</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/profiles/76561198186170037" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;profiles&#x2F;76561198186170037" rel="noopener" target="_blank"><i class="fa fa-fw fa-steam"></i>Steam</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-paw"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cyanashi All Rights Reserved.</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">57k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:43</span>
+</div><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备17037841号-1 </a>
+  <span class="post-meta-divider">|</span>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.1
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+
+<span class="post-meta-divider">|</span>
+<!-- 在网页底部添加网站运行时间 -->
+<span id="timeDate">载入天数...&ensp;</span><span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("10/18/2018 15:04:17");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "已运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
