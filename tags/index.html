@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"ews.ink","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"ews.ink","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"./public/search.xml"};
   </script>
 
   <meta name="description" content="Always Sometimes Monsters">
@@ -28,7 +28,7 @@
 <meta property="og:description" content="Always Sometimes Monsters">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-11-23T03:00:31.000Z">
-<meta property="article:modified_time" content="2020-03-27T20:08:33.094Z">
+<meta property="article:modified_time" content="2020-03-29T07:50:09.122Z">
 <meta property="article:author" content="Cyanashi">
 <meta property="article:tag" content="blog">
 <meta property="article:tag" content="Python">
@@ -51,6 +51,15 @@
   <title>标签 | 非典型中二征候群
   </title>
   
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162156040-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-162156040-1');
+      }
+    </script>
 
 
 
@@ -110,6 +119,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -143,9 +153,34 @@
     <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
 
   </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 
 </nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
 </div>
     </header>
 
@@ -190,10 +225,10 @@
       <div class="post-body">
           <div class="tag-cloud">
             <div class="tag-cloud-title">
-              目前共计 28 个标签
+              目前共计 29 个标签
             </div>
             <div class="tag-cloud-tags">
-              <a href="/tags/Algolia/" style="font-size: 12px; color: #ccc">Algolia</a> <a href="/tags/CentOS/" style="font-size: 12px; color: #ccc">CentOS</a> <a href="/tags/Debian/" style="font-size: 16.5px; color: #9d9d9d">Debian</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #9d9d9d">Git</a> <a href="/tags/hexo/" style="font-size: 16.5px; color: #9d9d9d">Hexo</a> <a href="/tags/linux/" style="font-size: 25.5px; color: #404040">Linux</a> <a href="/tags/minecraft/" style="font-size: 12px; color: #ccc">Minecraft</a> <a href="/tags/next/" style="font-size: 16.5px; color: #9d9d9d">NexT</a> <a href="/tags/pve/" style="font-size: 12px; color: #ccc">PVE</a> <a href="/tags/Termux/" style="font-size: 12px; color: #ccc">Termux</a> <a href="/tags/%E4%B8%90%E5%B8%AE/" style="font-size: 12px; color: #ccc">丐帮</a> <a href="/tags/jx3/" style="font-size: 12px; color: #ccc">剑侠情缘网络版叁</a> <a href="/tags/blog/" style="font-size: 12px; color: #ccc">博客</a> <a href="/tags/%E5%9B%A2%E7%BB%93/" style="font-size: 12px; color: #ccc">团结</a> <a href="/tags/%E5%AE%8F/" style="font-size: 12px; color: #ccc">宏</a> <a href="/tags/%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF/" style="font-size: 12px; color: #ccc">宝塔面板</a> <a href="/tags/%E5%B7%AB%E5%8C%BB/" style="font-size: 12px; color: #ccc">巫医</a> <a href="/tags/%E6%90%9C%E7%B4%A2/" style="font-size: 12px; color: #ccc">搜索</a> <a href="/tags/diablo3/" style="font-size: 30px; color: #111">暗黑破坏神3</a> <a href="/tags/rpi/" style="font-size: 21px; color: #6f6f6f">树莓派</a> <a href="/tags/%E6%AD%A6%E5%83%A7/" style="font-size: 12px; color: #ccc">武僧</a> <a href="/tags/%E6%AD%BB%E7%81%B5%E6%B3%95%E5%B8%88/" style="font-size: 12px; color: #ccc">死灵法师</a> <a href="/tags/live/" style="font-size: 12px; color: #ccc">直播</a> <a href="/tags/%E7%BA%A2%E7%9F%B3/" style="font-size: 12px; color: #ccc">红石</a> <a href="/tags/security/" style="font-size: 12px; color: #ccc">网络安全</a> <a href="/tags/%E8%BF%BD%E9%9A%8F%E8%80%85/" style="font-size: 12px; color: #ccc">追随者</a> <a href="/tags/build/" style="font-size: 25.5px; color: #404040">配装</a> <a href="/tags/%E9%87%8E%E8%9B%AE%E4%BA%BA/" style="font-size: 12px; color: #ccc">野蛮人</a>
+              <a href="/tags/Algolia/" style="font-size: 12px; color: #ccc">Algolia</a> <a href="/tags/CentOS/" style="font-size: 12px; color: #ccc">CentOS</a> <a href="/tags/Debian/" style="font-size: 16.5px; color: #9d9d9d">Debian</a> <a href="/tags/Git/" style="font-size: 16.5px; color: #9d9d9d">Git</a> <a href="/tags/hexo/" style="font-size: 16.5px; color: #9d9d9d">Hexo</a> <a href="/tags/linux/" style="font-size: 25.5px; color: #404040">Linux</a> <a href="/tags/minecraft/" style="font-size: 12px; color: #ccc">Minecraft</a> <a href="/tags/next/" style="font-size: 16.5px; color: #9d9d9d">NexT</a> <a href="/tags/pve/" style="font-size: 12px; color: #ccc">PVE</a> <a href="/tags/Termux/" style="font-size: 12px; color: #ccc">Termux</a> <a href="/tags/%E4%B8%90%E5%B8%AE/" style="font-size: 12px; color: #ccc">丐帮</a> <a href="/tags/jx3/" style="font-size: 12px; color: #ccc">剑侠情缘网络版叁</a> <a href="/tags/blog/" style="font-size: 12px; color: #ccc">博客</a> <a href="/tags/%E5%9B%A2%E7%BB%93/" style="font-size: 12px; color: #ccc">团结</a> <a href="/tags/%E5%AE%9D%E5%A1%94%E9%9D%A2%E6%9D%BF/" style="font-size: 12px; color: #ccc">宝塔面板</a> <a href="/tags/%E5%B7%AB%E5%8C%BB/" style="font-size: 12px; color: #ccc">巫医</a> <a href="/tags/ocd/" style="font-size: 12px; color: #ccc">强迫症</a> <a href="/tags/%E6%90%9C%E7%B4%A2/" style="font-size: 12px; color: #ccc">搜索</a> <a href="/tags/diablo3/" style="font-size: 30px; color: #111">暗黑破坏神3</a> <a href="/tags/rpi/" style="font-size: 21px; color: #6f6f6f">树莓派</a> <a href="/tags/%E6%AD%A6%E5%83%A7/" style="font-size: 12px; color: #ccc">武僧</a> <a href="/tags/%E6%AD%BB%E7%81%B5%E6%B3%95%E5%B8%88/" style="font-size: 12px; color: #ccc">死灵法师</a> <a href="/tags/%E6%B8%B8%E6%88%8F%E5%AE%8F/" style="font-size: 12px; color: #ccc">游戏宏</a> <a href="/tags/live/" style="font-size: 12px; color: #ccc">直播</a> <a href="/tags/%E7%BA%A2%E7%9F%B3/" style="font-size: 12px; color: #ccc">红石</a> <a href="/tags/security/" style="font-size: 12px; color: #ccc">网络安全</a> <a href="/tags/%E8%BF%BD%E9%9A%8F%E8%80%85/" style="font-size: 12px; color: #ccc">追随者</a> <a href="/tags/build/" style="font-size: 25.5px; color: #404040">配装</a> <a href="/tags/%E9%87%8E%E8%9B%AE%E4%BA%BA/" style="font-size: 12px; color: #ccc">野蛮人</a>
             </div>
           </div>
         
@@ -273,18 +308,18 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">29</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -336,12 +371,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">62k</span>
+    <span title="站点总字数">65k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:53</span>
+    <span title="站点阅读时长">2:08</span>
 </div><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备17037841号-1 </a>
   <span class="post-meta-divider">|</span>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
@@ -428,6 +463,10 @@ setInterval("createtime()",250);
 
 
 
+  
+<script src="/js/local-search.js"></script>
+
+
 
 
 
@@ -443,5 +482,7 @@ setInterval("createtime()",250);
 
   
 
-</body>
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
 </html>
