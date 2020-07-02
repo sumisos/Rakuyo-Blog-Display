@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ews.ink","root":"/","scheme":"Pisces","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"./public/search.xml"};
+  </script>
+
+  <meta name="description" content="前略，总之决定自建一个SNS，了解相关知识之后决定使用Mastodon。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="「运维」Mastodon 的安装与部署">
+<meta property="og:url" content="https://ews.ink/operation/Mastodon-Deploy/index.html">
+<meta property="og:site_name" content="非典型中二征候群">
+<meta property="og:description" content="前略，总之决定自建一个SNS，了解相关知识之后决定使用Mastodon。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/05/07/IRfU4dNaHx6keGz.jpg">
+<meta property="article:published_time" content="2020-05-05T09:59:54.000Z">
+<meta property="article:modified_time" content="2020-07-02T10:31:56.144Z">
+<meta property="article:author" content="Cyanashi">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Mastodon">
+<meta property="article:tag" content="Ubuntu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/07/IRfU4dNaHx6keGz.jpg">
+
+<link rel="canonical" href="https://ews.ink/operation/Mastodon-Deploy/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>「运维」Mastodon 的安装与部署 | 非典型中二征候群</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-162156040-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-162156040-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">非典型中二征候群</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">康复中心<br>Everybody Wants Some</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-todos">
+
+    <a href="/todos/" rel="section"><i class="fa fa-fw fa-list"></i>企划</a>
+
+  </li>
+        <li class="menu-item menu-item-games">
+
+    <a href="/games/" rel="section"><i class="fa fa-fw fa-gamepad"></i>游戏</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ews.ink/operation/Mastodon-Deploy/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Cyanashi">
+      <meta itemprop="description" content="Always Sometimes Monsters">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="非典型中二征候群">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          「运维」Mastodon 的安装与部署
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-05-05 17:59:54" itemprop="dateCreated datePublished" datetime="2020-05-05T17:59:54+08:00">2020-05-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-02 18:31:56" itemprop="dateModified" datetime="2020-07-02T18:31:56+08:00">2020-07-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/operation/" itemprop="url" rel="index"><span itemprop="name">运维</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前略，总之决定自建一个SNS，了解相关知识之后决定使用Mastodon。</p>
+<a id="more"></a>
+
+<h2 id="前置工作"><a href="#前置工作" class="headerlink" title="前置工作"></a>前置工作</h2><p>网上很多文档提到的——直接指向<a href="https://github.com/tootsuite/documentation/tree/master/content/en" target="_blank" rel="noopener">官方文档仓库</a>的链接——都已经失效了，现在这个仓库是<a href="https://docs.joinmastodon.org" target="_blank" rel="noopener">文档页面</a>的静态文件。<br>彳亍口巴，看看<a href="https://hub.docker.com/r/tootsuite/mastodon/dockerfile" target="_blank" rel="noopener">dockerfile</a>，发现也是用的「ubuntu:18.04」，但我想装在centos上，只能摸着石头过河。<br>众所周知，搜索引擎的正确用法是输入关键词空格关键词，不是输入问题。（它只是个搜索引擎，不是什么超智能 AI)<br>用「centos」「mastodon」搜索发现Vultr的文档站居然有一篇名为《<a href="https://www.vultr.com/docs/installing-mastodon-on-centos-7" target="_blank" rel="noopener">Installing Mastodon on CentOS 7</a>》的部署教程。<br>虽然名字看起来很美好，但它是2017年底写就的，时效性堪忧，不过至少可以尝试照猫画虎了。</p>
+<blockquote>
+<p>根据最新（2020.5.5）dockerfile得知依赖为：</p>
+<ul>
+<li><a href="https://nodejs.org/download/release/" target="_blank" rel="noopener">Node</a> 12.16.1</li>
+<li><a href="https://cache.ruby-lang.org/pub/ruby/" target="_blank" rel="noopener">Ruby</a> 2.6.6<br>由于准备安装最新版的Mastodon（v3.1.3），依赖包版本尽量对齐标准。</li>
+</ul>
+</blockquote>
+<h3 id="尝试使用-CentOS"><a href="#尝试使用-CentOS" class="headerlink" title="尝试使用 CentOS"></a>尝试使用 CentOS</h3><p>经过一晚上+一上午的尝试最后被Nginx配置劝退了，我Nginx还有其他生产环境，实在不能乱搞。<br>简单说下踩的坑：</p>
+<h4 id="安装Ruby"><a href="#安装Ruby" class="headerlink" title="安装Ruby"></a>安装Ruby</h4><p>  由于《<a href="https://www.vultr.com/docs/installing-mastodon-on-centos-7" target="_blank" rel="noopener">Installing Mastodon on CentOS 7</a>》这篇文档里的安装方式过于奇怪……<br>  我换了种简单明了的方式安装并升级到2.6，但升级后的版本也只有2.6.2。<br>  为了避免兼容问题，我按照官方文档的安装方式重装了一次。<br>  即 <code>git clone</code> <a href="https://github.com/rbenv/rbenv" target="_blank" rel="noopener">rbenv</a> &amp; <a href="https://github.com/rbenv/ruby-build" target="_blank" rel="noopener">ruby-build</a> 后运行<code>RUBY_CONFIGURE_OPTS=--with-jemalloc rbenv install 2.6.6</code>安装。</p>
+<h4 id="安装-PostgreSQL"><a href="#安装-PostgreSQL" class="headerlink" title="安装 PostgreSQL"></a>安装 PostgreSQL</h4><p>PostgreSQL 所需的<strong>全部依赖包</strong>应该是：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install postgresql96-server postgresql96-contrib libpqxx-devel protobuf-devel \</span><br><span class="line">  postgresql-libs postgresql-devel</span><br></pre></td></tr></table></figure>
+<p>注意<code>postgresql-libs</code>和<code>postgresql-devel</code>这两个包一定要安装（文档里没有），否则之后配置的时候会报错找不到<code>pg</code>。<br>总之之后配置的时候应该运行的是：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ gem install pg -v <span class="string">'1.2.3'</span> --<span class="built_in">source</span> <span class="string">'https://rubygems.org/'</span> <span class="comment"># 本来没有这一行 报错提示要先安装pg</span></span><br><span class="line">$ bundle config build.pg --with-pg-config=/usr/pgsql-9.6/bin/pg_config</span><br><span class="line">$ bundle config deployment <span class="string">'true'</span></span><br><span class="line">$ bundle config without <span class="string">'development test'</span></span><br><span class="line">$ bundle install -j$(getconf _NPROCESSORS_ONLN)</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成密钥"><a href="#生成密钥" class="headerlink" title="生成密钥"></a>生成密钥</h4><p><code>RAILS_ENV=production bundle exec rake secret</code>运行两次就够了。<br>最新的版本配置文件里已经没有<code>PAPERCLIP_SECRET</code>这一项了。</p>
+<h4 id="数据库迁移"><a href="#数据库迁移" class="headerlink" title="数据库迁移"></a>数据库迁移</h4><p>由于文档太旧并没有提到这个问题，现在直接运行<code>RAILS_ENV=production bundle exec rails db:setup</code>应该会报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Execute strong_migrations:safety_assured</span><br><span class="line">rails aborted!</span><br><span class="line">Set SAFETY_ASSURED=1 to run this task <span class="keyword">in</span> production</span><br></pre></td></tr></table></figure>
+<p>修复：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ vim .env.production <span class="comment"># 当前位于 Mastodon 项目目录下</span></span><br><span class="line"><span class="comment"># 加上 SAFETY_ASSURED=1 这一行</span></span><br><span class="line"><span class="comment"># 保存并退出</span></span><br></pre></td></tr></table></figure>
+<p>切换到<code>postgres</code>用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ su - postgres</span><br></pre></td></tr></table></figure>
+<p>运行<code>psql</code>进入数据库命令行终端，再继续执行</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">postgres=# <span class="keyword">DROP</span> <span class="keyword">DATABASE</span> mastodon;</span><br><span class="line">postgres=# \q</span><br></pre></td></tr></table></figure>
+<p>来删除之前「已新建数据库，但继续执行后续的迁移任务时，抛出错误并终止」所产生的<code>mastodon</code>数据库。</p>
+<blockquote>
+<p>注意如果没报错就不用删库重建了。<del>有兴趣尝试的应该都是运维老鸟，大概也用不着我再多嘴提醒。</del></p>
+</blockquote>
+<p>以上内容基于 2020.5.6 在 CentOS 7.3.1611 上的尝试，我放弃了。<br>另外搞一台Ubuntu用docker装岂不美哉。</p>
+<h2 id="正式开始"><a href="#正式开始" class="headerlink" title="正式开始"></a>正式开始</h2><h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><h4 id="SMTP邮件服务"><a href="#SMTP邮件服务" class="headerlink" title="SMTP邮件服务"></a>SMTP邮件服务</h4><p>一定要准备好，即使你准备单人用，用一般方式注册管理员也要通过邮箱验证。</p>
+<blockquote>
+<p>$TODO 暂时直接使用第三方SMTP服务 后续使用自己的域名自行搭建邮箱服务器</p>
+</blockquote>
+<p>Mastodon 官方推荐 SMTP 服务使用 Mailgun 或者 SparkPost，简单评价一下。</p>
+<p>Mailgun 已经没有每月 10k 封的免费额度了，现在（2020.5.7）填完信用卡可以<strong>试用三个月</strong>，每月 5k 封。<br>超过额度以后价格是 $0.8 / 1k 封。<del>感觉这个价格定得很微妙</del></p>
+<p><img src="https://i.loli.net/2020/05/07/IRfU4dNaHx6keGz.jpg" alt=""></p>
+<p>SparkPost 不支持大陆的 IP 注册，我是换成香港 IP 注册成功的。<br>免费额度是每月共 500 封，每天最多不超过 100 封。<br>最便宜的套餐是 $20 / 月，每月 50k 封，算下来平均 $0.4 / 1k 封，比 Mailgun 便宜一倍。<br>但他是包月套餐，就是说买完不管你用不用一个月都会花 $20，Mailgun 胜在灵活。<del>我又不买搁这算锤子呢</del></p>
+<p>如果没有特殊需求可以直接用 outlook：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">服务器名称: smtp.office365.com</span><br><span class="line">端口: 587</span><br><span class="line">加密方法: STARTTLS</span><br></pre></td></tr></table></figure>
+<p>缺点是后缀是普通的 <code>@outlook.com</code> 或者 <code>@hotmail.com</code>，直观的可信程度比较低。<br>而且微软不让使用 <code>noreply</code> 之类的关键词，建议直接使用根域名当作用户名，比如 <code>ews.ink@outlook.com</code>。</p>
+<blockquote>
+<p>至于垃圾邮件的问题，据相关从业人员称（<a href="https://www.v2ex.com/t/664875" target="_blank" rel="noopener">来源</a>）：</p>
+<ul>
+<li>很多服务商根本不看 mail-tester 那一套。每家都有自己的标准，这个标准有的公开，有的不公开。进不进垃圾邮件这个规律，外人也基本摸不到，因为线上的 antispam 规则是训练出来的，且每日更新。</li>
+<li>进不进垃圾邮件这个规律，除了几条死规则，甚至内部人员也基本摸不到。毕竟很难用常规逻辑去理解深度模型。</li>
+</ul>
+<p>要我说，垃圾邮件就垃圾邮件吧，提醒一下用户就行了，不必过于在意，反正也强求不来。</p>
+</blockquote>
+<h4 id="扩展内存"><a href="#扩展内存" class="headerlink" title="扩展内存"></a>扩展内存</h4><p>如果 VPS 内存不到 2G，请查看 swap 虚拟内存。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ free -m</span><br></pre></td></tr></table></figure>
+<p>如果 free Swap （剩余交换区大小）不到 1G，就给它加 1G：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ swapoff -a</span><br><span class="line">$ dd <span class="keyword">if</span>=/dev/zero of=/swapfile bs=1M count=1024</span><br><span class="line">$ mkswap /swapfile</span><br><span class="line">$ swapon /swapfile</span><br></pre></td></tr></table></figure>
+<p>设置开机自动启动，运行 <code>vim /etc/fstab</code>，配置为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/swapfile swap swap defaults 0 0</span><br></pre></td></tr></table></figure>
+
+<p><code>reboot</code>重启服务器之后 <code>free -m</code> 查看是否生效。</p>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>安装 docker CE 以及 docker-compose，略。</p>
+<h3 id="新建用户"><a href="#新建用户" class="headerlink" title="新建用户"></a>新建用户</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ adduser --disabled-login mastodon  <span class="comment"># 新建 Mastodon 专属用户</span></span><br><span class="line">$ usermod -aG docker mastodon  <span class="comment"># 将 mastodon 用户加入 docker 组</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="下载主程序"><a href="#下载主程序" class="headerlink" title="下载主程序"></a>下载主程序</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ su - mastodon  <span class="comment"># 切换到 mastodon 用户</span></span><br><span class="line">$ <span class="built_in">pwd</span>  <span class="comment"># 应该在 /home/mastodon</span></span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/tootsuite/mastodon.git</span><br><span class="line">$ <span class="built_in">cd</span> mastodon</span><br><span class="line">$ cp .env.production.sample .env.production</span><br></pre></td></tr></table></figure>
+
+<h3 id="构建-docker-镜像"><a href="#构建-docker-镜像" class="headerlink" title="构建 docker 镜像"></a>构建 docker 镜像</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose build</span><br></pre></td></tr></table></figure>
+<p>耐心等待，中途报错不用管（也管不了），经过漫长的等待之后终于成功了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Successfully built &lt;docker image id&gt;</span><br><span class="line">Successfully tagged tootsuite/mastodon:latest</span><br></pre></td></tr></table></figure>
+<p>运行 <code>docker images</code> 就可以看到构建好的镜像了。</p>
+<h3 id="编辑配置"><a href="#编辑配置" class="headerlink" title="编辑配置"></a>编辑配置</h3><p>运行交互式安装向导：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose run --rm web bundle <span class="built_in">exec</span> rake mastodon:setup</span><br></pre></td></tr></table></figure>
+
+<p>执行以下命令<strong>两次</strong>，并分别<strong>记录</strong>好回显的密钥：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose run --rm web bundle <span class="built_in">exec</span> rake secret</span><br></pre></td></tr></table></figure>
+<p>然后 <code>vim .env.production</code> 把密钥分别填入 <code>SECRET_KEY_BASE</code> 和 <code>OTP_SECRET</code>。</p>
+<p>或者<strong>换种方式（和上面的方式二选一）</strong>直接用 <code>sed</code> 完成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ SECRET_KEY_BASE=$(docker-compose run --rm web bundle <span class="built_in">exec</span> rake secret)</span><br><span class="line">$ sed -i -e <span class="string">"s/SECRET_KEY_BASE=/&amp;<span class="variable">$&#123;SECRET_KEY_BASE&#125;</span>/"</span> .env.production</span><br><span class="line"></span><br><span class="line">$ OTP_SECRET=$(docker-compose run --rm web bundle <span class="built_in">exec</span> rake secret)</span><br><span class="line">$ sed -i -e <span class="string">"s/OTP_SECRET=/&amp;<span class="variable">$&#123;OTP_SECRET&#125;</span>/"</span> .env.production</span><br></pre></td></tr></table></figure>
+
+<p>继续生成 <code>Web Push VAPID</code> 所需的密钥对：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose run --rm web bundle <span class="built_in">exec</span> rake mastodon:webpush:generate_vapid_key</span><br></pre></td></tr></table></figure>
+<p><strong>记录好</strong>生成的 <code>VAPID_PRIVATE_KEY</code> 和 <code>VAPID_PUBLIC_KEY</code>，并运行 <code>vim .env.production</code> 把密钥分别填入对应位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">VAPID_PRIVATE_KEY&#x3D;</span><br><span class="line">VAPID_PUBLIC_KEY&#x3D;</span><br></pre></td></tr></table></figure>
+
+<p>顺便把 <code>LOCAL_DOMAIN</code> 默认的 <code>example.com</code> 修改为要使用的域名。<br>此外记得配置好 SMTP，否则没办法用正常方式注册。</p>
+<p>配置结束之后重新构建镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose build</span><br></pre></td></tr></table></figure>
+<p>又是漫长的等待。</p>
+<h3 id="运行容器"><a href="#运行容器" class="headerlink" title="运行容器"></a>运行容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-compose up -d</span><br></pre></td></tr></table></figure>
+<p>运行 <code>docker ps</code> 就可以看到正在运行的 docker 容器了。</p>
+<p>Nginx 配置和申请 SSL 证书，略。</p>
+<h2 id="官方文档"><a href="#官方文档" class="headerlink" title="官方文档"></a>官方文档</h2><p>本节内容翻译自「<a href="https://docs.joinmastodon.org/admin/install/" target="_blank" rel="noopener">官方文档 - 安装</a>」（2020.5.6）。</p>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><h4 id="Node-js"><a href="#Node-js" class="headerlink" title="Node.js"></a>Node.js</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -sL https://deb.nodesource.com/setup_12.x | bash -</span><br></pre></td></tr></table></figure>
+<h4 id="Yarn"><a href="#Yarn" class="headerlink" title="Yarn"></a>Yarn</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"deb https://dl.yarnpkg.com/debian/ stable main"</span> | tee /etc/apt/sources.list.d/yarn.list</span><br><span class="line">$ apt-get update</span><br></pre></td></tr></table></figure>
+
+<h4 id="系统lib库"><a href="#系统lib库" class="headerlink" title="系统lib库"></a>系统lib库</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">$ apt-get install -y \</span><br><span class="line">  imagemagick ffmpeg libpq-dev libxml2-dev libxslt1-dev file git-core \</span><br><span class="line">  g++ libprotobuf-dev protobuf-compiler pkg-config nodejs gcc autoconf \</span><br><span class="line">  bison build-essential libssl-dev libyaml-dev libreadline6-dev \</span><br><span class="line">  zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev \</span><br><span class="line">  nginx redis-server redis-tools postgresql postgresql-contrib \</span><br><span class="line">  certbot python-certbot-nginx yarn libidn11-dev libicu-dev libjemalloc-dev</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装-Ruby"><a href="#安装-Ruby" class="headerlink" title="安装 Ruby"></a>安装 Ruby</h3><p>我们应该安装 <code>rbenv</code> 来管理 Ruby 版本，因为这样可以非常方便地获取指定版本，更新的时候升级到最新版本也很简单。</p>
+<p><code>rbenv</code> 是和 Linux 用户绑定的，因此，首先我们需要新建一个用户来专门运行 Mastodon：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ adduser --disabled-login mastodon</span><br></pre></td></tr></table></figure>
+<p>然后切换到这个用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ su - mastodon</span><br></pre></td></tr></table></figure>
+
+<p>利用 Git 下载 <code>rbenv</code> 和 <code>rbenv-build</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/rbenv/rbenv.git ~/.rbenv</span><br><span class="line">$ <span class="built_in">cd</span> ~/.rbenv &amp;&amp; src/configure &amp;&amp; make -C src</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">'export PATH="$HOME/.rbenv/bin:$PATH"'</span> &gt;&gt; ~/.bashrc</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">'eval "$(rbenv init -)"'</span> &gt;&gt; ~/.bashrc</span><br><span class="line">$ <span class="built_in">exec</span> bash</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build</span><br></pre></td></tr></table></figure>
+
+<p>Clone 下来之后，我们就可以安装指定版本的 Ruby 了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ RUBY_CONFIGURE_OPTS=--with-jemalloc rbenv install 2.6.6  <span class="comment"># 安装 2.6.6</span></span><br><span class="line">$ rbenv global 2.6.6  <span class="comment"># 应用到全局</span></span><br></pre></td></tr></table></figure>
+
+<p>我们还需要安装 <code>bundler</code>（Ruby 的包管理器，类似 Node 的 npm）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gem install bundler --no-document</span><br></pre></td></tr></table></figure>
+
+<p>全部安装完成之后，退出 mastodon 用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="配置-PostgreSQL"><a href="#配置-PostgreSQL" class="headerlink" title="配置 PostgreSQL"></a>配置 PostgreSQL</h3><h4 id="进阶设置（可选）"><a href="#进阶设置（可选）" class="headerlink" title="进阶设置（可选）"></a>进阶设置（可选）</h4><p>可以使用 <a href="https://pgtune.leopard.in.ua/#/" target="_blank" rel="noopener">pgTune</a> 生成合适的配置，编辑 <code>/etc/postgresql/9.6/main/postgresql.conf</code> 里面想要自定义的设置项，然后运行 <code>systemctl restart postgresql</code> 重启 PostgreSQL。</p>
+<h4 id="新建用户-1"><a href="#新建用户-1" class="headerlink" title="新建用户"></a>新建用户</h4><p>你还需要一个 PostgreSQL 数据库用户来给 Mastodon 使用。<br>最基础的账户配置是简单地使用 <code>ident</code> 鉴权，即<strong>PostgreSQL 用户不设置单独的密码，可以直接被同名的 Linux 用户使用</strong>。<br>（用人话说，默认选项不做额外配置，Linux <code>adduser</code> 的 mastodon 用户直接被<strong>视为</strong>同名的 PostgreSQL 的 mastodon 用户）</p>
+<p>打开 PostgreSQL 的命令行终端：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo -u postgres psql</span><br></pre></td></tr></table></figure>
+<p>运行以下命令：</p>
+<figure class="highlight postgresql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">postgres=# <span class="keyword">CREATE</span> <span class="keyword">USER</span> mastodon <span class="keyword">CREATEDB</span>;</span><br><span class="line">postgres=# \q</span><br></pre></td></tr></table></figure>
+<p>搞定。</p>
+<h3 id="安装并配置-Mastodon"><a href="#安装并配置-Mastodon" class="headerlink" title="安装并配置 Mastodon"></a>安装并配置 Mastodon</h3><p>首先切换到 mastodon 用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ su - mastodon</span><br></pre></td></tr></table></figure>
+
+<h4 id="下载-Mastodon-主程序"><a href="#下载-Mastodon-主程序" class="headerlink" title="下载 Mastodon 主程序"></a>下载 Mastodon 主程序</h4><p>从 Github clone 最新的稳定版本（截至 2020.5.6 为 <a href="https://github.com/tootsuite/mastodon/releases/tag/v3.1.3" target="_blank" rel="noopener">v3.1.3</a>）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/tootsuite/mastodon.git live &amp;&amp; <span class="built_in">cd</span> live</span><br><span class="line">$ git checkout $(git tag -l | grep -v <span class="string">'rc[0-9]*$'</span> | sort -V | tail -n 1)</span><br></pre></td></tr></table></figure>
+
+<h4 id="安装必要依赖"><a href="#安装必要依赖" class="headerlink" title="安装必要依赖"></a>安装必要依赖</h4><p>现在安装的是 Ruby 和 JavaScript 的依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ bundle config deployment <span class="string">'true'</span>  <span class="comment"># 第一次运行需要配置</span></span><br><span class="line">$ bundle config without <span class="string">'development test'</span>  <span class="comment"># 第一次运行需要配置</span></span><br><span class="line"><span class="comment"># 上面两行只有全新安装时需要配置，升级或者重装都不需要再配置</span></span><br><span class="line">$ bundle install -j$(getconf _NPROCESSORS_ONLN)</span><br><span class="line">$ yarn install --pure-lockfile</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成配置文件"><a href="#生成配置文件" class="headerlink" title="生成配置文件"></a>生成配置文件</h4><p>运行交互式安装向导：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ RAILS_ENV=production bundle <span class="built_in">exec</span> rake mastodon:setup</span><br></pre></td></tr></table></figure>
+<p>这一步将：</p>
+<ul>
+<li>创建新的配置文件</li>
+<li>预编译前端资源</li>
+<li>执行数据库迁移（用人话说，初始化数据库）</li>
+</ul>
+<p>生成的配置文件名为 <code>.env.production</code>，你<del>可以</del> 必须按照你的实际情况编辑配置文件，详情可以参考《<a href="https://docs.joinmastodon.org/admin/config/" target="_blank" rel="noopener">官方文档 - 配置</a>》。<br>（截至 2020.5.6，这个页面基本只把所有设置项列出来了，几乎没有参考价值，<code>This page is under construction.</code>）</p>
+<p>配置完之后，从 mastodon 退回到 root 用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="配置-Nginx"><a href="#配置-Nginx" class="headerlink" title="配置 Nginx"></a>配置 Nginx</h4><p>把模版配置文件复制到 Nginx 的工作目录下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cp /home/mastodon/live/dist/nginx.conf /etc/nginx/sites-available/mastodon</span><br><span class="line">$ ln -s /etc/nginx/sites-available/mastodon /etc/nginx/sites-enabled/mastodon</span><br></pre></td></tr></table></figure>
+<p>编辑配置文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/nginx/sites-available/mastodon</span><br></pre></td></tr></table></figure>
+<p>把 <code>example.com</code> 替换为你的域名，其他细节视具体情况灵活变动。</p>
+<p>重载 Nginx 来让新配置生效。</p>
+<p>申请 SSL 证书，略。</p>
+<h3 id="注册系统服务"><a href="#注册系统服务" class="headerlink" title="注册系统服务"></a>注册系统服务</h3><p>把 Mastodon 提前写好的系统服务模版文件复制到正确的路径：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cp /home/mastodon/live/dist/mastodon-*.service /etc/systemd/system/</span><br></pre></td></tr></table></figure>
+
+<p>然后<strong>根据实际情况</strong>确定里面写的「用户名」「文件路径」等配置都没有问题：</p>
+<ul>
+<li><code>vim /etc/systemd/system/mastodon-web.service</code></li>
+<li><code>vim /etc/systemd/system/mastodon-sidekiq.service</code></li>
+<li><code>vim /etc/systemd/system/mastodon-streaming.service</code></li>
+</ul>
+<p>最后，启动并使能这三个新的系统服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl daemon-reload</span><br><span class="line">$ systemctl start mastodon-web mastodon-sidekiq mastodon-streaming</span><br><span class="line">$ systemctl <span class="built_in">enable</span> mastodon-*</span><br></pre></td></tr></table></figure>
+<p>注册为系统服务后，每次重启服务器都会自动启动 Mastodon 了。</p>
+<p>官方文档全部配置完成，访问你的域名，你也有自己的长毛象实例啦。</p>
+<h3 id="获取管理员"><a href="#获取管理员" class="headerlink" title="获取管理员"></a>获取管理员</h3><p>成功注册账户之后回到服务器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ RAILS_ENV=production bin/tootctl accounts modify [你的账号名] --role admin</span><br></pre></td></tr></table></figure>
+
+<h2 id="更新版本"><a href="#更新版本" class="headerlink" title="更新版本"></a>更新版本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> &lt;你的Mastodon项目路径&gt;</span><br><span class="line">$ git fetch &amp;&amp; git checkout $(git tag -l | grep -v <span class="string">'rc[0-9]*$'</span> | sort -V | tail -n 1)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取新版本有很多方法，比如还可以</span></span><br><span class="line">$ git describe --tags `git rev-list --tags --max-count=1`</span><br><span class="line"><span class="comment"># 不一定非得用某种方法，总之能得出最新版本号并 git checkout 切换过去就行</span></span><br><span class="line"></span><br><span class="line">$ docker-compose build <span class="comment"># 重建 Image</span></span><br><span class="line">$ docker-compose up -d <span class="comment"># 重启 Container</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Cyanashi
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://ews.ink/operation/Mastodon-Deploy/" title="「运维」Mastodon 的安装与部署">https://ews.ink/operation/Mastodon-Deploy/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># Linux</a>
+              <a href="/tags/Mastodon/" rel="tag"># Mastodon</a>
+              <a href="/tags/Ubuntu/" rel="tag"># Ubuntu</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/game/Terraria-1.3.5.3/" rel="prev" title="「游戏」《泰拉瑞亚》游玩流程">
+      <i class="fa fa-chevron-left"></i> 「游戏」《泰拉瑞亚》游玩流程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前置工作"><span class="nav-number">1.</span> <span class="nav-text">前置工作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#尝试使用-CentOS"><span class="nav-number">1.1.</span> <span class="nav-text">尝试使用 CentOS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装Ruby"><span class="nav-number">1.1.1.</span> <span class="nav-text">安装Ruby</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装-PostgreSQL"><span class="nav-number">1.1.2.</span> <span class="nav-text">安装 PostgreSQL</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#生成密钥"><span class="nav-number">1.1.3.</span> <span class="nav-text">生成密钥</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库迁移"><span class="nav-number">1.1.4.</span> <span class="nav-text">数据库迁移</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正式开始"><span class="nav-number">2.</span> <span class="nav-text">正式开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工作"><span class="nav-number">2.1.</span> <span class="nav-text">准备工作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SMTP邮件服务"><span class="nav-number">2.1.1.</span> <span class="nav-text">SMTP邮件服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#扩展内存"><span class="nav-number">2.1.2.</span> <span class="nav-text">扩展内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#其他"><span class="nav-number">2.1.3.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新建用户"><span class="nav-number">2.2.</span> <span class="nav-text">新建用户</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#下载主程序"><span class="nav-number">2.3.</span> <span class="nav-text">下载主程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建-docker-镜像"><span class="nav-number">2.4.</span> <span class="nav-text">构建 docker 镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#编辑配置"><span class="nav-number">2.5.</span> <span class="nav-text">编辑配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行容器"><span class="nav-number">2.6.</span> <span class="nav-text">运行容器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#官方文档"><span class="nav-number">3.</span> <span class="nav-text">官方文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装依赖"><span class="nav-number">3.1.</span> <span class="nav-text">安装依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Node-js"><span class="nav-number">3.1.1.</span> <span class="nav-text">Node.js</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Yarn"><span class="nav-number">3.1.2.</span> <span class="nav-text">Yarn</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#系统lib库"><span class="nav-number">3.1.3.</span> <span class="nav-text">系统lib库</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-Ruby"><span class="nav-number">3.2.</span> <span class="nav-text">安装 Ruby</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置-PostgreSQL"><span class="nav-number">3.3.</span> <span class="nav-text">配置 PostgreSQL</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#进阶设置（可选）"><span class="nav-number">3.3.1.</span> <span class="nav-text">进阶设置（可选）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#新建用户-1"><span class="nav-number">3.3.2.</span> <span class="nav-text">新建用户</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装并配置-Mastodon"><span class="nav-number">3.4.</span> <span class="nav-text">安装并配置 Mastodon</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#下载-Mastodon-主程序"><span class="nav-number">3.4.1.</span> <span class="nav-text">下载 Mastodon 主程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装必要依赖"><span class="nav-number">3.4.2.</span> <span class="nav-text">安装必要依赖</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#生成配置文件"><span class="nav-number">3.4.3.</span> <span class="nav-text">生成配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置-Nginx"><span class="nav-number">3.4.4.</span> <span class="nav-text">配置 Nginx</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注册系统服务"><span class="nav-number">3.5.</span> <span class="nav-text">注册系统服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取管理员"><span class="nav-number">3.6.</span> <span class="nav-text">获取管理员</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新版本"><span class="nav-number">4.</span> <span class="nav-text">更新版本</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cyanashi"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Cyanashi</p>
+  <div class="site-description" itemprop="description">Always Sometimes Monsters</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">35</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:po@ews.ink" title="E-Mail → mailto:po@ews.ink"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://t.me/Cyanashi" title="Telegram → https:&#x2F;&#x2F;t.me&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-telegram"></i>Telegram</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/Cyanashi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Cyanashi" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://bgm.tv/user/rakuyo" title="Bangumi → https:&#x2F;&#x2F;bgm.tv&#x2F;user&#x2F;rakuyo" rel="noopener" target="_blank"><i class="fa fa-fw fa-tv"></i>Bangumi</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://tool.ews.ink/" title="Tools → https:&#x2F;&#x2F;tool.ews.ink" rel="noopener" target="_blank"><i class="fa fa-fw fa-wrench"></i>Tools</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://steamcommunity.com/profiles/76561198186170037" title="Steam → https:&#x2F;&#x2F;steamcommunity.com&#x2F;profiles&#x2F;76561198186170037" rel="noopener" target="_blank"><i class="fa fa-fw fa-steam"></i>Steam</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-paw"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cyanashi All Rights Reserved.</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    <span title="站点总字数">98k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:13</span>
+</div><a href="http://www.beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备17037841号-1 </a>
+  <span class="post-meta-divider">|</span>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme - <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.1
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量 UV">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量 PV">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+
+<span class="post-meta-divider">|</span>
+<!-- 在网页底部添加网站运行时间 -->
+<span id="timeDate">载入天数...&ensp;</span><span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("10/18/2018 15:04:17");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "已运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>
